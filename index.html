@@ -1,95 +1,46 @@
 ---
 layout: default
-title: Document Portal
+title: Share Hub
 ---
 
-<h1 class="text-center mb-4">Document Portal</h1>
-
-<div class="table-container">
-    <table id="documentsTable" class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Type</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for page in site.pages %}
-                {% if page.path contains 'pages/' %}
-                    {% assign page_extension = page.path | split: '.' | last %}
-                    {% if page_extension == 'html' or page_extension == 'md' %}
-                        <tr>
-                            <td>
-                                <a href="{{ site.baseurl }}{{ page.url }}">
-                                    {% if page.title %}
-                                        {{ page.title }}
-                                    {% else %}
-                                        {{ page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
-                                    {% endif %}
-                                </a>
-                            </td>
-                            <td data-order="{{ page.date | date: '%s' }}">
-                                {% if page.date %}
-                                    {{ page.date | date: "%B %d, %Y" }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if page_extension == 'md' %}
-                                    <span class="badge bg-info">Markdown</span>
-                                {% else %}
-                                    <span class="badge bg-primary">HTML</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-            
-            {% comment %} Also include static HTML files that don't have front matter {% endcomment %}
-            {% assign static_pages = site.static_files | where_exp: "file", "file.path contains '/pages/'" | where_exp: "file", "file.extname == '.html'" %}
-            {% for static_page in static_pages %}
-                {% assign already_listed = false %}
-                {% for page in site.pages %}
-                    {% if page.path == static_page.path %}
-                        {% assign already_listed = true %}
-                        {% break %}
-                    {% endif %}
-                {% endfor %}
-                {% unless already_listed %}
-                    <tr>
-                        <td>
-                            <a href="{{ site.baseurl }}{{ static_page.path }}">
-                                {{ static_page.name | remove: '.html' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
-                            </a>
-                        </td>
-                        <td data-order="{{ static_page.modified_time | date: '%s' }}">
-                            {{ static_page.modified_time | date: "%B %d, %Y" }}
-                        </td>
-                        <td>
-                            <span class="badge bg-primary">HTML</span>
-                        </td>
-                    </tr>
-                {% endunless %}
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    {% assign total_pages = site.pages | where_exp: "page", "page.path contains 'pages/'" | size %}
-    {% if total_pages == 0 %}
-        <div class="alert alert-info" role="alert">
-            No documents found. Add HTML or Markdown files to the <code>pages/</code> folder to see them listed here.
-        </div>
-    {% endif %}
-</div>
-
-<div class="mt-4 text-center text-muted">
-    <small>Total Documents: {{ total_pages }}</small>
-</div>
-
 <style>
+.share-hub-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+.share-hub-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+.share-hub-header p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+}
+.section-header {
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.section-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+.private-section {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-top: 3rem;
+}
+.password-input-group {
+    max-width: 400px;
+    margin: 0 auto;
+}
+#privateDocuments {
+    display: none;
+    margin-top: 2rem;
+}
 .badge {
     font-size: 0.75rem;
 }
@@ -101,4 +52,302 @@ title: Document Portal
     background-color: #0d6efd !important;
     color: white;
 }
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: black;
+}
+.lock-badge {
+    margin-left: 0.5rem;
+}
 </style>
+
+<div class="share-hub-header text-center">
+    <h1>📂 Share Hub</h1>
+    <p>Secure Document Sharing Portal</p>
+</div>
+
+<div class="container">
+    <!-- Public Documents Section -->
+    <div class="public-section">
+        <h2 class="section-header">
+            <span class="section-icon">📄</span>Public Shares
+        </h2>
+        
+        <div class="table-container">
+            <table id="publicTable" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in site.pages %}
+                        {% if page.path contains 'public/' %}
+                            {% assign page_extension = page.path | split: '.' | last %}
+                            {% if page_extension == 'html' or page_extension == 'md' %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ site.baseurl }}{{ page.url }}">
+                                            {% if page.title %}
+                                                {{ page.title }}
+                                            {% else %}
+                                                {{ page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td data-order="{{ page.date | date: '%s' }}">
+                                        {% if page.date %}
+                                            {{ page.date | date: "%B %d, %Y" }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if page_extension == 'md' %}
+                                            <span class="badge bg-info">Markdown</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">HTML</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% comment %} Also include static HTML files that don't have front matter {% endcomment %}
+                    {% assign static_public = site.static_files | where_exp: "file", "file.path contains '/public/'" | where_exp: "file", "file.extname == '.html'" %}
+                    {% for static_page in static_public %}
+                        {% assign already_listed = false %}
+                        {% for page in site.pages %}
+                            {% if page.path == static_page.path %}
+                                {% assign already_listed = true %}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
+                        {% unless already_listed %}
+                            <tr>
+                                <td>
+                                    <a href="{{ site.baseurl }}{{ static_page.path }}">
+                                        {{ static_page.name | remove: '.html' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                                    </a>
+                                </td>
+                                <td data-order="{{ static_page.modified_time | date: '%s' }}">
+                                    {{ static_page.modified_time | date: "%B %d, %Y" }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">HTML</span>
+                                </td>
+                            </tr>
+                        {% endunless %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% assign public_pages = site.pages | where_exp: "page", "page.path contains 'public/'" | size %}
+            {% if public_pages == 0 %}
+                <div class="alert alert-info" role="alert">
+                    No public documents found. Add HTML or Markdown files to the <code>public/</code> folder to see them listed here.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Private Documents Section -->
+    <div class="private-section">
+        <h2 class="section-header">
+            <span class="section-icon">🔒</span>Private Zone
+        </h2>
+        
+        <div id="passwordForm">
+            <div class="text-center">
+                <p class="text-muted mb-3">Enter password to access private documents</p>
+                <div class="password-input-group">
+                    <div class="input-group">
+                        <input type="password" 
+                               id="privatePassword" 
+                               class="form-control" 
+                               placeholder="Enter password"
+                               onkeypress="if(event.key === 'Enter') unlockPrivate()">
+                        <button class="btn btn-primary" onclick="unlockPrivate()">
+                            <i class="bi bi-unlock"></i> Unlock
+                        </button>
+                    </div>
+                    <div class="text-danger mt-2" id="passwordError" style="display: none;">
+                        Incorrect password. Please try again.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="privateDocuments">
+            <div class="alert alert-success mb-3">
+                <strong>🔓 Access Granted</strong> - Private documents are now accessible
+                <button class="btn btn-sm btn-outline-secondary float-end" onclick="lockPrivate()">Lock Again</button>
+            </div>
+            
+            <table id="privateTable" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in site.pages %}
+                        {% if page.path contains 'private/' %}
+                            {% assign page_extension = page.path | split: '.' | last %}
+                            {% if page_extension == 'html' or page_extension == 'md' %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ site.baseurl }}{{ page.url }}">
+                                            {% if page.title %}
+                                                {{ page.title }}
+                                            {% else %}
+                                                {{ page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                                            {% endif %}
+                                            <span class="lock-badge badge bg-warning">Protected</span>
+                                        </a>
+                                    </td>
+                                    <td data-order="{{ page.date | date: '%s' }}">
+                                        {% if page.date %}
+                                            {{ page.date | date: "%B %d, %Y" }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if page_extension == 'md' %}
+                                            <span class="badge bg-info">Markdown</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">HTML</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% comment %} Also include static HTML files in private folder {% endcomment %}
+                    {% assign static_private = site.static_files | where_exp: "file", "file.path contains '/private/'" | where_exp: "file", "file.extname == '.html'" %}
+                    {% for static_page in static_private %}
+                        {% assign already_listed = false %}
+                        {% for page in site.pages %}
+                            {% if page.path == static_page.path %}
+                                {% assign already_listed = true %}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
+                        {% unless already_listed %}
+                            <tr>
+                                <td>
+                                    <a href="{{ site.baseurl }}{{ static_page.path }}">
+                                        {{ static_page.name | remove: '.html' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                                        <span class="lock-badge badge bg-warning">Protected</span>
+                                    </a>
+                                </td>
+                                <td data-order="{{ static_page.modified_time | date: '%s' }}">
+                                    {{ static_page.modified_time | date: "%B %d, %Y" }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">HTML</span>
+                                </td>
+                            </tr>
+                        {% endunless %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% assign private_pages = site.pages | where_exp: "page", "page.path contains 'private/'" | size %}
+            {% if private_pages == 0 %}
+                <div class="alert alert-info" role="alert">
+                    No private documents found. Add HTML or Markdown files to the <code>private/</code> folder to see them listed here.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="mt-4 text-center text-muted">
+        <small>
+            {% assign public_count = site.pages | where_exp: "page", "page.path contains 'public/'" | size %}
+            {% assign private_count = site.pages | where_exp: "page", "page.path contains 'private/'" | size %}
+            Public Documents: {{ public_count }} | Private Documents: {{ private_count }}
+        </small>
+    </div>
+</div>
+
+<script>
+// Password for private section (using simple check for "dev123123")
+const correctPassword = 'dev123123';
+
+// Check URL parameters on page load
+window.addEventListener('DOMContentLoaded', function() {
+    // Check for URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const keyParam = urlParams.get('key') || urlParams.get('unlock');
+    
+    if (keyParam === correctPassword) {
+        showPrivateDocuments();
+    }
+    
+    // Check session storage
+    if (sessionStorage.getItem('privateAccess') === 'granted') {
+        showPrivateDocuments();
+    }
+    
+    // Initialize DataTables for public table
+    if ($.fn.DataTable && $('#publicTable tbody tr').length > 0) {
+        $('#publicTable').DataTable({
+            "pageLength": 10,
+            "order": [[1, "desc"]],
+            "language": {
+                "search": "Search public documents:",
+                "lengthMenu": "Show _MENU_ documents per page",
+                "info": "Showing _START_ to _END_ of _TOTAL_ public documents"
+            }
+        });
+    }
+});
+
+function unlockPrivate() {
+    const password = document.getElementById('privatePassword').value;
+    const errorMsg = document.getElementById('passwordError');
+    
+    if (password === correctPassword) {
+        showPrivateDocuments();
+        sessionStorage.setItem('privateAccess', 'granted');
+        errorMsg.style.display = 'none';
+    } else {
+        errorMsg.style.display = 'block';
+        document.getElementById('privatePassword').value = '';
+    }
+}
+
+function showPrivateDocuments() {
+    document.getElementById('passwordForm').style.display = 'none';
+    document.getElementById('privateDocuments').style.display = 'block';
+    
+    // Initialize DataTables for private table if not already initialized
+    if ($.fn.DataTable && !$.fn.DataTable.isDataTable('#privateTable') && $('#privateTable tbody tr').length > 0) {
+        $('#privateTable').DataTable({
+            "pageLength": 10,
+            "order": [[1, "desc"]],
+            "language": {
+                "search": "Search private documents:",
+                "lengthMenu": "Show _MENU_ documents per page",
+                "info": "Showing _START_ to _END_ of _TOTAL_ private documents"
+            }
+        });
+    }
+}
+
+function lockPrivate() {
+    document.getElementById('passwordForm').style.display = 'block';
+    document.getElementById('privateDocuments').style.display = 'none';
+    document.getElementById('privatePassword').value = '';
+    sessionStorage.removeItem('privateAccess');
+}
+</script>

@@ -1,6 +1,6 @@
 # Jekyll Configuration for GitHub Pages
-title: Reports Portal
-description: Automated HTML Reports Listing
+title: Share Hub
+description: Secure Document Sharing Portal
 baseurl: "/jekyll-site" # the subpath of your site, e.g. /blog
 url: "https://jarvisnsam.github.io" # the base hostname & protocol for your site
 
@@ -21,9 +21,16 @@ exclude:
   - vendor/gems/
   - vendor/ruby/
 
-# Collections for pages
+# Layout defaults for different folders
 defaults:
+  # Public documents use the default layout
   - scope:
-      path: "pages"
+      path: "public"
     values:
       layout: "default"
+  
+  # Private documents automatically use the password-protected layout
+  - scope:
+      path: "private"
+    values:
+      layout: "private_protected"

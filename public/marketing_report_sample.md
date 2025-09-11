@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Marketing Performance Report - Q3 2024
+date: 2024-09-30
 ---
 
 # Marketing Performance Report
