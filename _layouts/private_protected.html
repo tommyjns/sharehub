@@ -54,11 +54,20 @@
             display: none;
         }
         #pwd {
-            color: #212529; /* Dark text color for password input */
-            background-color: white;
+            color: #212529 !important; /* Force dark text color for password input */
+            background-color: white !important;
+            -webkit-text-fill-color: #212529 !important; /* For Safari/WebKit browsers */
         }
         #pwd::placeholder {
-            color: #6c757d; /* Gray color for placeholder text */
+            color: #6c757d !important; /* Gray color for placeholder text */
+            -webkit-text-fill-color: #6c757d !important;
+        }
+        /* Additional specificity for mobile devices and Bootstrap overrides */
+        input[type="password"]#pwd,
+        .form-control#pwd {
+            color: #212529 !important;
+            -webkit-text-fill-color: #212529 !important;
+            background-color: white !important;
         }
     </style>
 </head>
