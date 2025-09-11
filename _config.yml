@@ -21,9 +21,9 @@ exclude:
   - vendor/gems/
   - vendor/ruby/
 
-# Collections for reports
+# Collections for pages
 defaults:
   - scope:
-      path: "reports"
+      path: "pages"
     values:
       layout: "default"

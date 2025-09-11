@@ -15,21 +15,24 @@ title: Reports Index
             </tr>
         </thead>
         <tbody>
-            {% assign reports = site.static_files | where_exp: "file", "file.path contains '/reports/'" | where_exp: "file", "file.extname == '.html'" %}
-            {% for report in reports %}
-                {% assign filename = report.name | remove: '.html' %}
+            {% assign pages_files = site.static_files | where_exp: "file", "file.path contains '/pages/'" %}
+            {% assign html_pages = pages_files | where_exp: "file", "file.extname == '.html'" %}
+            {% assign md_pages = pages_files | where_exp: "file", "file.extname == '.md'" %}
+            {% assign all_pages = html_pages | concat: md_pages %}
+            {% for page_file in all_pages %}
+                {% assign filename = page_file.name | remove: '.html' | remove: '.md' %}
                 {% assign title = filename | replace: '_', ' ' | replace: '-', ' ' | capitalize %}
                 <tr>
                     <td>
-                        <a href="{{ site.baseurl }}{{ report.path }}">{{ title }}</a>
+                        <a href="{{ site.baseurl }}{{ page_file.path }}">{{ title }}</a>
                     </td>
-                    <td data-order="{{ report.modified_time | date: '%s' }}">
-                        {{ report.modified_time | date: "%B %d, %Y" }}
+                <td data-order="{{ page_file.modified_time | date: '%s' }}">
+                    {{ page_file.modified_time | date: "%B %d, %Y" }}
                     </td>
                     <td>
-                        {% assign size_kb = report.size | divided_by: 1024.0 %}
+                        {% assign size_kb = page_file.size | divided_by: 1024.0 %}
                         {% if size_kb < 1 %}
-                            {{ report.size }} bytes
+                            {{ page_file.size }} bytes
                         {% elsif size_kb < 1024 %}
                             {{ size_kb | round: 1 }} KB
                         {% else %}
@@ -42,13 +45,13 @@ title: Reports Index
         </tbody>
     </table>
     
-    {% if reports.size == 0 %}
+    {% if all_pages.size == 0 %}
         <div class="alert alert-info" role="alert">
-            No reports found. Add HTML files to the <code>reports/</code> folder to see them listed here.
+            No pages found. Add HTML or Markdown files to the <code>pages/</code> folder to see them listed here.
         </div>
     {% endif %}
 </div>
 
 <div class="mt-4 text-center text-muted">
-    <small>Total Reports: {{ reports.size }}</small>
+    <small>Total Pages: {{ all_pages.size }}</small>
 </div>
