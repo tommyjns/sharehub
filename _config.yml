@@ -1,7 +1,7 @@
 # Jekyll Configuration for GitHub Pages
 title: Share Hub
 description: Secure Document Sharing Portal
-baseurl: "" # Empty for local development - set to "/jekyll-site" for GitHub Pages
+baseurl: "/jekyll-site" # Set to your repository name for GitHub Pages
 url: "https://jarvisnsam.github.io" # the base hostname & protocol for your site
 
 # Build settings

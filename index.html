@@ -17,10 +17,16 @@ title: Share Hub
 /* Modern compact header */
 .share-hub-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: white !important;
     padding: 1rem 0;
     margin-bottom: 2rem;
     position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+}
+.share-hub-header * {
+    color: white !important;
 }
 
 /* Folder hierarchy styles */
@@ -1149,10 +1155,10 @@ function toggleFolder(element) {
 
 // Copy link to clipboard
 function copyLink(path, button) {
-    // Build the full URL
+    // Build the full URL with proper baseurl
     const baseUrl = window.location.origin;
-    const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
-    const fullUrl = baseUrl + basePath + path;
+    const baseUrlPath = '{{ site.baseurl }}';
+    const fullUrl = baseUrl + baseUrlPath + path;
     
     // Use modern clipboard API if available
     if (navigator.clipboard) {
