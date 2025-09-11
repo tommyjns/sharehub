@@ -1,57 +1,104 @@
 ---
 layout: default
-title: Reports Index
+title: Document Portal
 ---
 
-<h1 class="text-center mb-4">Reports Index</h1>
+<h1 class="text-center mb-4">Document Portal</h1>
 
 <div class="table-container">
-    <table id="reportsTable" class="table table-striped table-hover">
+    <table id="documentsTable" class="table table-striped table-hover">
         <thead>
             <tr>
                 <th>Title</th>
                 <th>Date</th>
-                <th>File Size</th>
+                <th>Type</th>
             </tr>
         </thead>
         <tbody>
-            {% assign pages_files = site.static_files | where_exp: "file", "file.path contains '/pages/'" %}
-            {% assign html_pages = pages_files | where_exp: "file", "file.extname == '.html'" %}
-            {% assign md_pages = pages_files | where_exp: "file", "file.extname == '.md'" %}
-            {% assign all_pages = html_pages | concat: md_pages %}
-            {% for page_file in all_pages %}
-                {% assign filename = page_file.name | remove: '.html' | remove: '.md' %}
-                {% assign title = filename | replace: '_', ' ' | replace: '-', ' ' | capitalize %}
-                <tr>
-                    <td>
-                        <a href="{{ site.baseurl }}{{ page_file.path }}">{{ title }}</a>
-                    </td>
-                <td data-order="{{ page_file.modified_time | date: '%s' }}">
-                    {{ page_file.modified_time | date: "%B %d, %Y" }}
-                    </td>
-                    <td>
-                        {% assign size_kb = page_file.size | divided_by: 1024.0 %}
-                        {% if size_kb < 1 %}
-                            {{ page_file.size }} bytes
-                        {% elsif size_kb < 1024 %}
-                            {{ size_kb | round: 1 }} KB
-                        {% else %}
-                            {% assign size_mb = size_kb | divided_by: 1024.0 %}
-                            {{ size_mb | round: 2 }} MB
-                        {% endif %}
-                    </td>
-                </tr>
+            {% for page in site.pages %}
+                {% if page.path contains 'pages/' %}
+                    {% assign page_extension = page.path | split: '.' | last %}
+                    {% if page_extension == 'html' or page_extension == 'md' %}
+                        <tr>
+                            <td>
+                                <a href="{{ site.baseurl }}{{ page.url }}">
+                                    {% if page.title %}
+                                        {{ page.title }}
+                                    {% else %}
+                                        {{ page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td data-order="{{ page.date | date: '%s' }}">
+                                {% if page.date %}
+                                    {{ page.date | date: "%B %d, %Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if page_extension == 'md' %}
+                                    <span class="badge bg-info">Markdown</span>
+                                {% else %}
+                                    <span class="badge bg-primary">HTML</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            
+            {% comment %} Also include static HTML files that don't have front matter {% endcomment %}
+            {% assign static_pages = site.static_files | where_exp: "file", "file.path contains '/pages/'" | where_exp: "file", "file.extname == '.html'" %}
+            {% for static_page in static_pages %}
+                {% assign already_listed = false %}
+                {% for page in site.pages %}
+                    {% if page.path == static_page.path %}
+                        {% assign already_listed = true %}
+                        {% break %}
+                    {% endif %}
+                {% endfor %}
+                {% unless already_listed %}
+                    <tr>
+                        <td>
+                            <a href="{{ site.baseurl }}{{ static_page.path }}">
+                                {{ static_page.name | remove: '.html' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                            </a>
+                        </td>
+                        <td data-order="{{ static_page.modified_time | date: '%s' }}">
+                            {{ static_page.modified_time | date: "%B %d, %Y" }}
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">HTML</span>
+                        </td>
+                    </tr>
+                {% endunless %}
             {% endfor %}
         </tbody>
     </table>
     
-    {% if all_pages.size == 0 %}
+    {% assign total_pages = site.pages | where_exp: "page", "page.path contains 'pages/'" | size %}
+    {% if total_pages == 0 %}
         <div class="alert alert-info" role="alert">
-            No pages found. Add HTML or Markdown files to the <code>pages/</code> folder to see them listed here.
+            No documents found. Add HTML or Markdown files to the <code>pages/</code> folder to see them listed here.
         </div>
     {% endif %}
 </div>
 
 <div class="mt-4 text-center text-muted">
-    <small>Total Pages: {{ all_pages.size }}</small>
+    <small>Total Documents: {{ total_pages }}</small>
 </div>
+
+<style>
+.badge {
+    font-size: 0.75rem;
+}
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: white;
+}
+.badge.bg-primary {
+    background-color: #0d6efd !important;
+    color: white;
+}
+</style>
