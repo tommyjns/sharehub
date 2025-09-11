@@ -1,227 +1,200 @@
-# Share Hub - Secure Document Sharing Portal
+# Share Hub - MCP Server Upload Guide
 
-A Jekyll-based document sharing portal with password protection, designed for GitHub Pages deployment.
+## Overview
+This guide provides instructions for uploading documents to the Share Hub using an MCP server with Git capabilities. The Share Hub is a Jekyll-based document sharing portal with public and private sections.
 
-## Features
+## Repository Structure
+```
+sharehub/
+├── public/          # Public documents (no password required)
+│   ├── *.md        # Markdown files (auto-converted to HTML by Jekyll)
+│   └── *.html      # Direct HTML files
+├── private/         # Private documents (password protected - default: "maco")
+│   ├── *.md        # Markdown files (auto-converted to HTML by Jekyll)
+│   └── *.html      # Direct HTML files
+└── _layouts/        # Jekyll layouts (DO NOT MODIFY)
+```
 
-- 📁 **Dual-folder structure**: Public and Private document sections
-- 🔒 **Password Protection**: Secure access to confidential documents
-- 📊 **Smart Tables**: Sortable, searchable document listings with DataTables
-- 📱 **Responsive Design**: Works on desktop and mobile devices
-- 🚀 **GitHub Pages Ready**: Deploy directly to GitHub Pages
+## File Upload Guidelines
 
-## Quick Start
+### 1. Public Documents
+Upload files to the `public/` directory for documents that should be accessible without authentication.
 
-### 1. Setup
-
-1. Fork or clone this repository
-2. Enable GitHub Pages in your repository settings
-3. Set the source to deploy from the main branch
-
-### 2. Adding Documents
-
-#### Public Documents (Open Access)
-Place documents in the `public/` folder:
-
-```markdown
+**For Markdown files (.md):**
+```
+Location: public/[filename].md
+```
+- Must include YAML front matter at the top:
+```yaml
 ---
+title: "Document Title"
+date: 2025-01-09
+---
+```
+
+**For HTML files (.html):**
+```
+Location: public/[filename].html
+```
+- Can be standalone HTML or use Jekyll templating
+- If using Jekyll templating, include front matter:
+```yaml
+---
+title: "Document Title"
 layout: default
-title: Your Document Title
-date: 2024-10-15
 ---
-
-Your content here...
 ```
 
-#### Private Documents (Password Protected)
-Place documents in the `private/` folder:
+### 2. Private Documents
+Upload files to the `private/` directory for password-protected documents.
 
-```markdown
+**For Markdown files (.md):**
+```
+Location: private/[filename].md
+```
+- Must include YAML front matter:
+```yaml
 ---
+title: "Confidential Document Title"
+date: 2025-01-09
+---
+```
+
+**For HTML files (.html):**
+```
+Location: private/[filename].html
+```
+- Include front matter for Jekyll processing:
+```yaml
+---
+title: "Confidential Document Title"
 layout: private_protected
-title: Confidential Document
-date: 2024-10-15
 ---
-
-Your confidential content...
 ```
 
-### 3. Password Protection
-
-- **Default Password**: `dev123123`
-- **Protection Levels**:
-  - Level 1: Password required to view private document list
-  - Level 2: Password required for each private document access
-- **Sharing with Password**: Add `?key=dev123123` to the URL
-
-#### Changing the Password
-
-To change the password, update it in two files:
-
-1. **index.html** (line ~189):
-```javascript
-if (password === 'dev123123') {
+### 3. Organizing Documents in Subfolders
+You can create subfolders within `public/` or `private/` for better organization:
+```
+public/
+├── reports/
+│   ├── quarterly_report.md
+│   └── annual_summary.html
+├── presentations/
+│   └── product_launch.md
 ```
 
-2. **_layouts/private_protected.html** (line ~108):
-```javascript
-if (password === 'dev123123') {
+## File Naming Conventions
+- Use lowercase letters
+- Replace spaces with underscores or hyphens
+- Avoid special characters except `-` and `_`
+- Examples: `marketing_report.md`, `q1-sales-data.html`
+
+## Git Workflow for MCP Server
+
+### Step 1: Clone or Pull Latest Changes
+```bash
+git pull origin main
 ```
 
-> ⚠️ **Security Note**: This uses client-side protection suitable for casual privacy. For sensitive data, use server-side authentication.
+### Step 2: Add Your Document
+Place your file in the appropriate directory:
+- `public/` for public access
+- `private/` for password-protected access
 
-## File Structure
-
-```
-share-hub/
-├── _layouts/
-│   ├── default.html          # Standard layout for public documents
-│   └── private_protected.html # Password-protected layout
-├── public/                    # Public documents (open access)
-│   └── *.md / *.html
-├── private/                   # Private documents (password required)
-│   └── *.md / *.html
-├── _config.yml               # Jekyll configuration
-├── index.html                # Main portal page
-└── README.md                 # This file
+### Step 3: Commit Changes
+```bash
+git add [filepath]
+git commit -m "Add [document type]: [brief description]"
 ```
 
-## Document Format
+Example commit messages:
+- "Add public report: Q1 2025 marketing analysis"
+- "Add private document: Confidential financial data"
+- "Update public/sales_dashboard.html with latest figures"
 
-### Markdown Files (.md)
+### Step 4: Push to Repository
+```bash
+git push origin main
+```
 
+## Document Templates
+
+### Markdown Template (public/example.md)
 ```markdown
 ---
-layout: default  # or private_protected for private docs
-title: Document Title
-date: 2024-10-15
+title: "Document Title Here"
+date: 2025-01-09
+author: "Author Name"
 ---
 
-# Your Content
+# Main Heading
 
-Write your content in Markdown format...
+## Introduction
+Your content here...
+
+## Section 1
+More content...
+
+## Conclusion
+Final thoughts...
 ```
 
-### HTML Files (.html)
-
+### HTML Template (public/example.html)
 ```html
 ---
-layout: default  # or private_protected for private docs
-title: Document Title
-date: 2024-10-15
+title: "Document Title Here"
+layout: default
 ---
 
-<h1>Your Content</h1>
-<p>Write your content in HTML format...</p>
+<h1>Main Heading</h1>
+
+<section>
+    <h2>Introduction</h2>
+    <p>Your content here...</p>
+</section>
+
+<section>
+    <h2>Main Content</h2>
+    <p>More content...</p>
+</section>
 ```
 
-## Customization
+## URL Structure After Upload
+Once uploaded and pushed, documents will be accessible at:
 
-### Site Title and Description
+**Public documents:**
+- `https://jarvisnsam.github.io/sharehub/public/[filename]`
+- Example: `https://jarvisnsam.github.io/sharehub/public/marketing_report`
 
-Edit `_config.yml`:
+**Private documents:**
+- `https://jarvisnsam.github.io/sharehub/private/[filename]`
+- Example: `https://jarvisnsam.github.io/sharehub/private/confidential_data`
+- Password required: "maco"
 
-```yaml
-title: Share Hub
-description: Secure Document Sharing Portal
-```
-
-### Styling
-
-The site uses Bootstrap 5. To customize:
-- Modify styles in `_layouts/default.html`
-- Add custom CSS in the `<style>` sections
-
-### Table Features
-
-DataTables is configured with:
-- Search functionality
-- Sorting by columns
-- Pagination (10 items per page)
-- Responsive design
-
-## Deployment
-
-### GitHub Pages
-
-1. Push your changes to GitHub
-2. Go to Settings → Pages
-3. Select source: Deploy from branch (main)
-4. Your site will be available at: `https://[username].github.io/[repository-name]/`
-
-### Local Development
-
-```bash
-# Install Jekyll
-gem install bundler jekyll
-
-# Install dependencies
-bundle install
-
-# Run locally
-bundle exec jekyll serve
-
-# Visit http://localhost:4000
-```
-
-## URL Parameters
-
-- `?key=[password]` - Unlock private section with password
-- `?unlock=[password]` - Alternative parameter for unlocking
-
-Example: `https://yourdomain.com/share-hub/?key=dev123123`
-
-## Browser Compatibility
-
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
-- Mobile browsers
-
-## Session Persistence
-
-- Password authentication is stored in browser session
-- Remains active until browser tab is closed
-- Each new tab requires re-authentication
+## Important Notes
+1. **Jekyll Processing**: GitHub Pages automatically processes .md files to HTML
+2. **Index Page**: The main page at https://jarvisnsam.github.io/sharehub/ automatically lists all uploaded documents
+3. **Password Protection**: All files in `private/` are automatically password-protected
+4. **Build Time**: After pushing, GitHub Pages may take 1-5 minutes to build and deploy changes
+5. **File Size**: Keep individual files under 100MB for optimal performance
 
 ## Troubleshooting
 
-### Documents not appearing in list
-- Ensure proper front matter with `title` and `date` fields
-- Check file is in correct folder (public/ or private/)
+### Document Not Appearing
+- Ensure proper YAML front matter is included
+- Check file is in correct directory (public/ or private/)
+- Wait 5 minutes for GitHub Pages to rebuild
+- Verify git push was successful
 
-### Password not working
-- Clear browser cache and session storage
-- Ensure password matches in both index.html and private_protected.html
+### Formatting Issues
+- Validate YAML front matter syntax
+- Check markdown syntax is correct
+- Ensure HTML files are well-formed
 
-### Date not displaying
-- Add `date: YYYY-MM-DD` to document front matter
-
-## Security Considerations
-
-This portal uses client-side password protection, which:
-- ✅ Prevents casual access to private documents
-- ✅ Works with static hosting (GitHub Pages)
-- ❌ Should NOT be used for highly sensitive data
-- ❌ Can be bypassed by technical users
-
-For production use with sensitive data, consider:
-- Server-side authentication
-- Encrypted storage
-- Professional security audit
-
-## License
-
-MIT License - See LICENSE file for details
+### Access Issues
+- Private documents require password: "maco"
+- Clear browser cache if having issues
+- Check URL is correct including the /sharehub/ base path
 
 ## Support
-
-For issues or questions:
-1. Check this README
-2. Review existing GitHub Issues
-3. Create a new Issue with details
-
----
-
-Built with Jekyll, Bootstrap 5, and DataTables
+For issues or questions about the Share Hub structure, refer to the main README.md file or contact the repository administrator.
