@@ -1,8 +1,8 @@
 # Jekyll Configuration for GitHub Pages
 title: Share Hub
 description: Secure Document Sharing Portal
-baseurl: "/jekyll-site" # Set to your repository name for GitHub Pages
-url: "https://jarvisnsam.github.io" # the base hostname & protocol for your site
+baseurl: "" # Leave empty for dynamic URL detection
+url: "" # Will be dynamically determined
 
 # Build settings
 markdown: kramdown

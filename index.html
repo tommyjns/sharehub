@@ -396,24 +396,42 @@ table.dataTable tbody tr:hover {
     display: flex;
     justify-content: flex-end;
 }
+/* Search box visibility fix with Bootstrap styling */
 .dataTables_filter {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    margin-left: auto;
 }
 .dataTables_filter label {
     display: none !important;
 }
-.dataTables_filter input {
+.dataTables_filter input[type="search"] {
     display: inline-block !important;
     visibility: visible !important;
-    padding: 0.25rem 0.5rem;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    width: 200px;
+    opacity: 1 !important;
+    width: 250px !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #212529 !important;
+    background-color: #fff !important;
+    background-clip: padding-box !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
 }
-.dataTables_filter input::placeholder {
-    color: #6c757d;
+.dataTables_filter input[type="search"]:focus {
+    color: #212529 !important;
+    background-color: #fff !important;
+    border-color: #86b7fe !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+.dataTables_filter input[type="search"]::placeholder {
+    color: #6c757d !important;
+    opacity: 1 !important;
 }
 .dataTables_bottom {
     display: flex;
@@ -604,12 +622,12 @@ table.dataTable tbody tr:hover {
     <!-- Tab Content -->
     <div class="tab-content">
         <!-- File Type Toggle and Search -->
-        <div class="table-controls-top">
-            <div class="file-type-toggle">
-                <input type="checkbox" id="showAllFiles" onchange="toggleFileTypes()">
-                <label for="showAllFiles">Show All</label>
+        <div class="table-controls-top d-flex justify-content-between align-items-center mb-3">
+            <div class="file-type-toggle form-check">
+                <input type="checkbox" class="form-check-input" id="showAllFiles" onchange="toggleFileTypes()">
+                <label class="form-check-label" for="showAllFiles">Show All</label>
             </div>
-            <div id="searchContainer"></div>
+            <div id="searchContainer" class="ms-auto"></div>
         </div>
         
         <!-- Public Documents Tab -->
@@ -728,7 +746,7 @@ table.dataTable tbody tr:hover {
                                             {% else %}
                                                 <i class="bi bi-file-earmark file-icon default-icon" title="File"></i>
                                             {% endif %}
-                                            <a href="{{ site.baseurl }}{{ file_url }}" target="_blank">
+                                            <a href="{{ file_url | relative_url }}" target="_blank">
                                                 {{ file_title }}
                                             </a>
                                             {% if folder_name != '' %}
@@ -871,7 +889,7 @@ table.dataTable tbody tr:hover {
                                                 {% else %}
                                                     <i class="bi bi-file-earmark file-icon default-icon" title="File"></i>
                                                 {% endif %}
-                                                <a href="{{ site.baseurl }}{{ file_url }}" target="_blank">
+                                                <a href="{{ file_url | relative_url }}" target="_blank">
                                                     {{ file_title }}
                                                 </a>
                                                 {% if folder_name != '' %}
@@ -1155,10 +1173,15 @@ function toggleFolder(element) {
 
 // Copy link to clipboard
 function copyLink(path, button) {
-    // Build the full URL with proper baseurl
+    // Build the full URL dynamically based on current page location
     const baseUrl = window.location.origin;
-    const baseUrlPath = '{{ site.baseurl }}';
-    const fullUrl = baseUrl + baseUrlPath + path;
+    // Get the base path from current URL (remove the last segment)
+    const pathSegments = window.location.pathname.split('/').filter(s => s);
+    if (pathSegments.length > 0 && pathSegments[pathSegments.length - 1].includes('.')) {
+        pathSegments.pop(); // Remove the current page if it's a file
+    }
+    const basePath = pathSegments.length > 0 ? '/' + pathSegments.join('/') : '';
+    const fullUrl = baseUrl + basePath + path;
     
     // Use modern clipboard API if available
     if (navigator.clipboard) {
