@@ -1,7 +1,7 @@
 # Jekyll Configuration for GitHub Pages
 title: Share Hub
 description: Secure Document Sharing Portal
-baseurl: "/jekyll-site" # Required for GitHub Pages project site deployment
+baseurl: "/sharehub" # Required for GitHub Pages project site deployment
 url: "" # Will be dynamically determined
 
 # Build settings
