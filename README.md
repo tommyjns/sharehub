@@ -163,17 +163,17 @@ layout: default
 Once uploaded and pushed, documents will be accessible at:
 
 **Public documents:**
-- `https://jarvisnsam.github.io/sharehub/public/[filename]`
-- Example: `https://jarvisnsam.github.io/sharehub/public/marketing_report`
+- `https://tommyjns.github.io/sharehub/public/[filename]`
+- Example: `https://tommyjns.github.io/sharehub/public/marketing_report`
 
 **Private documents:**
-- `https://jarvisnsam.github.io/sharehub/private/[filename]`
-- Example: `https://jarvisnsam.github.io/sharehub/private/confidential_data`
+- `https://tommyjns.github.io/sharehub/private/[filename]`
+- Example: `https://tommyjns.github.io/sharehub/private/confidential_data`
 - Password required: "maco"
 
 ## Important Notes
 1. **Jekyll Processing**: GitHub Pages automatically processes .md files to HTML
-2. **Index Page**: The main page at https://jarvisnsam.github.io/sharehub/ automatically lists all uploaded documents
+2. **Index Page**: The main page at https://tommyjns.github.io/sharehub/ automatically lists all uploaded documents
 3. **Password Protection**: All files in `private/` are automatically password-protected
 4. **Build Time**: After pushing, GitHub Pages may take 1-5 minutes to build and deploy changes
 5. **File Size**: Keep individual files under 100MB for optimal performance

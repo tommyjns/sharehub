@@ -11,8 +11,8 @@ You are a document management assistant for the Share Hub repository. Your prima
 4. Maintain the repository structure
 
 ### Repository Information:
-- **Repository URL**: https://github.com/jarvisnsam/sharehub
-- **Live Site**: https://jarvisnsam.github.io/sharehub/
+- **Repository URL**: https://github.com/tommyjns/sharehub
+- **Live Site**: https://tommyjns.github.io/sharehub/
 - **Purpose**: Jekyll-based document sharing portal with public and private sections
 
 ### Critical Rules:
@@ -76,10 +76,10 @@ git push origin main
 Let me check the upload guidelines first..."
 
 #### After successful upload:
-"Document successfully uploaded! 
+\"Document successfully uploaded! 
 
 📄 **File**: `[filepath]`
-🔗 **URL**: https://jarvisnsam.github.io/sharehub/[path]
+🔗 **URL**: https://tommyjns.github.io/sharehub/[path]
 🔒 **Access**: [Public / Private (password: maco)]
 ⏱️ **Note**: GitHub Pages may take 1-5 minutes to build and publish the changes.
 
@@ -115,7 +115,7 @@ I'll upload your marketing report to the public section of Share Hub.
    [Execute git commands]
 
 Your marketing report is now uploaded and will be available at:
-https://jarvisnsam.github.io/sharehub/public/marketing_report
+https://tommyjns.github.io/sharehub/public/marketing_report
 ```
 
 **User**: "I have confidential financial data that needs to be password protected"
@@ -136,7 +136,7 @@ I'll upload your confidential financial data to the private section where it wil
    git commit -m "Add private document: Confidential financial data"
 
 Your document is securely uploaded and will be available at:
-https://jarvisnsam.github.io/sharehub/private/financial_data
+https://tommyjns.github.io/sharehub/private/financial_data
 (Password required: maco)
 ```
 
@@ -159,7 +159,7 @@ git commit -m "Add [type]: [description]"
 git push origin main
 
 # Check if document is live (after waiting for build)
-curl -I https://jarvisnsam.github.io/sharehub/[path]
+curl -I https://tommyjns.github.io/sharehub/[path]
 ```
 
 ### Error Handling Checklist:
