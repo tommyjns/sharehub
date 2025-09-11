@@ -1,0 +1,54 @@
+---
+layout: default
+title: Reports Index
+---
+
+<h1 class="text-center mb-4">Reports Index</h1>
+
+<div class="table-container">
+    <table id="reportsTable" class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>File Size</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% assign reports = site.static_files | where_exp: "file", "file.path contains '/reports/'" | where_exp: "file", "file.extname == '.html'" %}
+            {% for report in reports %}
+                {% assign filename = report.name | remove: '.html' %}
+                {% assign title = filename | replace: '_', ' ' | replace: '-', ' ' | capitalize %}
+                <tr>
+                    <td>
+                        <a href="{{ report.path | relative_url }}">{{ title }}</a>
+                    </td>
+                    <td data-order="{{ report.modified_time | date: '%s' }}">
+                        {{ report.modified_time | date: "%B %d, %Y" }}
+                    </td>
+                    <td>
+                        {% assign size_kb = report.size | divided_by: 1024.0 %}
+                        {% if size_kb < 1 %}
+                            {{ report.size }} bytes
+                        {% elsif size_kb < 1024 %}
+                            {{ size_kb | round: 1 }} KB
+                        {% else %}
+                            {% assign size_mb = size_kb | divided_by: 1024.0 %}
+                            {{ size_mb | round: 2 }} MB
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if reports.size == 0 %}
+        <div class="alert alert-info" role="alert">
+            No reports found. Add HTML files to the <code>reports/</code> folder to see them listed here.
+        </div>
+    {% endif %}
+</div>
+
+<div class="mt-4 text-center text-muted">
+    <small>Total Reports: {{ reports.size }}</small>
+</div>

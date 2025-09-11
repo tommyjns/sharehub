@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Portal</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS for sorting -->
+    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .table-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Reports Index</h1>
+
+        <div class="table-container">
+            <table id="reportsTable" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsTableBody">
+                    <!-- Reports will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 text-center text-muted">
+            <small id="totalReports">Loading reports...</small>
+        </div>
+    </div>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        // Define the reports array with your HTML files
+        const reports = [
+            {
+                filename: 'marketing_report.html',
+                title: 'Marketing Report',
+                date: '2025-01-09',
+                description: 'Q4 2024 Marketing Performance'
+            },
+            {
+                filename: 'sales_dashboard.html',
+                title: 'Sales Dashboard',
+                date: '2025-01-11',
+                description: 'January 2025 Sales Overview'
+            }
+            // Add more reports here as needed
+        ];
+
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Populate the table
+        function populateReportsTable() {
+            const tbody = document.getElementById('reportsTableBody');
+            
+            reports.forEach(report => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <a href="reports/${report.filename}">${report.title}</a>
+                    </td>
+                    <td data-order="${report.date}">
+                        ${formatDate(report.date)}
+                    </td>
+                    <td>
+                        ${report.description}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update total count
+            document.getElementById('totalReports').textContent = `Total Reports: ${reports.length}`;
+        }
+
+        // Initialize on document ready
+        $(document).ready(function() {
+            // Populate the table first
+            populateReportsTable();
+            
+            // Then initialize DataTable with sorting
+            $('#reportsTable').DataTable({
+                "order": [[ 1, "desc" ]], // Sort by date column (descending) by default
+                "pageLength": 25,
+                "responsive": true,
+                "language": {
+                    "search": "Search reports:",
+                    "lengthMenu": "Show _MENU_ reports per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ reports",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    }
+                }
+            });
+        });
+
+        // Optional: Auto-detect reports if running on a web server
+        // This will work when deployed to GitHub Pages
+        async function autoDetectReports() {
+            try {
+                // Try to fetch a known report to check if we're on a server
+                const response = await fetch('reports/marketing_report.html', { method: 'HEAD' });
+                if (response.ok) {
+                    console.log('Running on a web server - reports are accessible');
+                }
+            } catch (error) {
+                console.log('Running locally - using predefined reports list');
+            }
+        }
+
+        // Call auto-detect on load
+        autoDetectReports();
+    </script>
+</body>
+</html>
