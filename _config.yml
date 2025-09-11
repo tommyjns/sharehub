@@ -1,12 +1,12 @@
 # Jekyll Configuration for GitHub Pages
 title: Share Hub
 description: Secure Document Sharing Portal
-baseurl: "/jekyll-site" # the subpath of your site, e.g. /blog
+baseurl: "" # Empty for local development - set to "/jekyll-site" for GitHub Pages
 url: "https://jarvisnsam.github.io" # the base hostname & protocol for your site
 
 # Build settings
 markdown: kramdown
-theme: minima
+# theme: minima  # Commented out - using custom layouts instead
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

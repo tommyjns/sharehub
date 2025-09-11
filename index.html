@@ -3,46 +3,337 @@ layout: default
 title: Share Hub
 ---
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
 <style>
+/* Modern compact header */
 .share-hub-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 3rem 0;
+    padding: 1rem 0;
     margin-bottom: 2rem;
+    position: relative;
+}
+
+/* Folder hierarchy styles */
+.folder-group {
+    margin-bottom: 1rem;
+}
+.folder-header {
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+}
+.folder-header:hover {
+    background: #e9ecef;
+}
+.folder-header i {
+    transition: transform 0.2s;
+}
+.folder-header.collapsed i.bi-chevron-down {
+    transform: rotate(-90deg);
+}
+.file-type-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+.file-type-toggle input[type="checkbox"] {
+    cursor: pointer;
+}
+.folder-contents {
+    margin-bottom: 1rem;
+}
+.files-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.files-table thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+.files-table th {
+    padding: 0.5rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+.files-table th.date-col {
+    width: 200px;
+    white-space: nowrap;
+}
+.file-row {
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+.file-row:hover {
+    background: #f8f9fa;
+}
+.file-row td {
+    padding: 0.5rem 1rem;
+}
+.file-row td.file-name {
+    padding-left: 2.5rem;
+}
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem; /* Smaller title text */
+}
+.file-info.subfolder-file {
+    padding-left: 1.5rem; /* Offset for subfolder files */
+}
+.folder-badge {
+    background-color: #17a2b8 !important;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-left: 0.5rem;
+    font-weight: normal;
+    display: inline-block;
+}
+.file-icon {
+    font-size: 1.1rem;
+}
+.file-icon.html-icon {
+    color: #e34c26;
+}
+.file-icon.md-icon {
+    color: #083fa1;
+}
+.file-icon.pdf-icon {
+    color: #d9534f;
+}
+.file-icon.image-icon {
+    color: #5cb85c;
+}
+.file-icon.doc-icon {
+    color: #5bc0de;
+}
+.file-icon.default-icon {
+    color: #777;
+}
+.file-date {
+    color: #6c757d;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+.copy-link-btn {
+    padding: 0.2rem 0.4rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #6c757d;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+.copy-link-btn:hover {
+    color: #007bff;
+}
+.copy-link-btn.copied {
+    color: #28a745;
+}
+.share-hub-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .share-hub-header h1 {
     margin: 0;
-    font-size: 2.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
-.share-hub-header p {
-    margin: 0.5rem 0 0 0;
-    opacity: 0.9;
+.header-password-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
-.section-header {
+.header-password-group input {
+    width: 200px;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 5px;
+}
+.header-password-group input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+.header-password-group button {
+    padding: 0.4rem 1rem;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.header-password-group button:hover {
+    background: rgba(255,255,255,0.35);
+}
+#privateAccessGranted button {
+    padding: 0.4rem 0.8rem;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background 0.3s;
+}
+#privateAccessGranted button:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* Header password styles */
+.password-toggle-btn {
+    display: none;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.password-input-wrapper {
+    position: relative;
+}
+.password-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 250px;
+}
+.password-dropdown input {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.4rem;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    color: #333;
+}
+.password-dropdown button {
+    width: 100%;
+    padding: 0.4rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Tab navigation */
+.tab-navigation {
     border-bottom: 2px solid #dee2e6;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
-.section-icon {
-    font-size: 1.5rem;
+.nav-tabs {
+    border-bottom: none;
+}
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
     margin-right: 0.5rem;
 }
-.private-section {
-    background-color: #f8f9fa;
+.nav-tabs .nav-link:hover {
+    color: #495057;
+    background: #e9ecef;
+}
+.nav-tabs .nav-link.active {
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-bottom-color: transparent;
+    font-weight: 600;
+}
+.nav-tabs .nav-link .icon {
+    margin-right: 0.5rem;
+}
+
+/* Tab content */
+.tab-content {
+    padding-top: 1rem;
+}
+.tab-pane {
+    animation: fadeIn 0.3s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Table styling - full width */
+.table-container {
+    width: 100%;
+}
+table.dataTable {
+    width: 100% !important;
+}
+.dataTables_wrapper {
+    width: 100%;
+}
+
+/* Private section styling */
+.private-locked {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
     border-radius: 10px;
-    padding: 2rem;
-    margin-top: 3rem;
 }
-.password-input-group {
-    max-width: 400px;
-    margin: 0 auto;
+.private-locked h3 {
+    color: #6c757d;
+    margin-bottom: 1rem;
 }
-#privateDocuments {
-    display: none;
-    margin-top: 2rem;
+.private-locked p {
+    color: #6c757d;
+    margin-bottom: 0;
 }
+
+/* Badge styling */
 .badge {
     font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
 }
 .badge.bg-info {
     background-color: #0dcaf0 !important;
@@ -56,236 +347,565 @@ title: Share Hub
     background-color: #ffc107 !important;
     color: black;
 }
-.lock-badge {
-    margin-left: 0.5rem;
+
+/* Stats footer */
+.stats-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* DataTable customization */
+.dataTables_wrapper {
+    margin-top: 1rem;
+}
+table.dataTable {
+    width: 100% !important;
+    border-collapse: collapse;
+}
+table.dataTable thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+table.dataTable tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+table.dataTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* DataTable layout customization */
+.table-controls-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+#searchContainer {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+.dataTables_filter {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+.dataTables_filter label {
+    display: none !important;
+}
+.dataTables_filter input {
+    display: inline-block !important;
+    visibility: visible !important;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    width: 200px;
+}
+.dataTables_filter input::placeholder {
+    color: #6c757d;
+}
+.dataTables_bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 0.5rem 0;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+.dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+}
+.dataTables_info {
+    flex-grow: 1;
+    text-align: center;
+    padding: 0 0.5rem;
+}
+.dataTables_paginate {
+    padding: 0 0.5rem;
+}
+.dataTables_length select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+}
+.dataTables_paginate .paginate_button {
+    padding: 0.25rem 0.5rem;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    background: white;
+    cursor: pointer;
+}
+.dataTables_paginate .paginate_button.current,
+.dataTables_paginate .paginate_button:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+.dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .share-hub-header .container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .share-hub-header h1 {
+        font-size: 1.5rem;
+    }
+    .header-password-group {
+        display: none !important;
+    }
+    .password-toggle-btn {
+        display: block;
+    }
+    .password-input-wrapper.mobile-active .password-dropdown {
+        display: block;
+    }
+    #privateAccessGranted button {
+        padding: 0.4rem 0.8rem;
+        background: rgba(255,255,255,0.25);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 5px;
+    }
+    .nav-tabs .nav-link {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+    .file-date {
+        font-size: 0.75rem;
+    }
+    .files-table th.date-col {
+        width: auto;
+    }
+    /* Mobile table adjustments */
+    .table-controls-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    #searchContainer {
+        width: 100%;
+    }
+    .dataTables_filter {
+        width: 100%;
+    }
+    .dataTables_filter input {
+        width: 100%;
+    }
+    .dataTables_bottom {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem;
+    }
+    .dataTables_length {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .dataTables_info {
+        text-align: left;
+        margin-bottom: 0.5rem;
+    }
+    .dataTables_paginate {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-tabs .nav-link {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    .nav-tabs .nav-link .icon {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Error message styling */
+.password-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: none;
 }
 </style>
 
-<div class="share-hub-header text-center">
-    <h1>📂 Share Hub</h1>
-    <p>Secure Document Sharing Portal</p>
+<!-- Compact Header with password input -->
+<div class="share-hub-header">
+    <div class="container">
+        <h1><i class="bi bi-folder-fill"></i> Share Hub</h1>
+        <div id="headerPasswordSection">
+            <!-- Desktop password form -->
+            <div id="headerPasswordForm" class="header-password-group">
+                <input type="password" 
+                       id="privatePassword" 
+                       placeholder="Password"
+                       onkeypress="if(event.key === 'Enter') unlockPrivate()">
+                <button onclick="unlockPrivate()"><i class="bi bi-box-arrow-in-right"></i></button>
+            </div>
+            <!-- Mobile password toggle -->
+            <div class="password-input-wrapper">
+                <button class="password-toggle-btn" onclick="togglePasswordDropdown(this)">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                </button>
+                <div class="password-dropdown">
+                    <input type="password" 
+                           id="privatePasswordMobile" 
+                           placeholder="Enter password"
+                           onkeypress="if(event.key === 'Enter') unlockPrivateMobile()">
+                    <button onclick="unlockPrivateMobile()">Unlock</button>
+                </div>
+            </div>
+            <!-- Unlocked status -->
+            <div id="privateAccessGranted" style="display: none;">
+                <button onclick="lockPrivate()" title="Logout"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="container">
-    <!-- Public Documents Section -->
-    <div class="public-section">
-        <h2 class="section-header">
-            <span class="section-icon">📄</span>Public Shares
-        </h2>
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="public-tab" data-bs-toggle="tab" href="#public" role="tab">
+                <i class="bi bi-globe"></i> Public
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="private-tab" data-bs-toggle="tab" href="#private" role="tab">
+                <i class="bi bi-shield-lock"></i> Private
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- File Type Toggle and Search -->
+        <div class="table-controls-top">
+            <div class="file-type-toggle">
+                <input type="checkbox" id="showAllFiles" onchange="toggleFileTypes()">
+                <label for="showAllFiles">Show All</label>
+            </div>
+            <div id="searchContainer"></div>
+        </div>
         
-        <div class="table-container">
-            <table id="publicTable" class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for page in site.pages %}
-                        {% if page.path contains 'public/' %}
-                            {% assign page_extension = page.path | split: '.' | last %}
-                            {% if page_extension == 'html' or page_extension == 'md' %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ site.baseurl }}{{ page.url }}">
-                                            {% if page.title %}
-                                                {{ page.title }}
+        <!-- Public Documents Tab -->
+        <div class="tab-pane fade show active" id="public" role="tabpanel">
+            <div id="publicDocumentsList">
+                {% comment %} Collect all public files from both site.pages and site.static_files {% endcomment %}
+                {% assign public_files = "" | split: "" %}
+                
+                {% comment %} First collect from site.pages (processed files like MD and HTML) {% endcomment %}
+                {% for page in site.pages %}
+                    {% if page.path contains 'public/' %}
+                        {% assign page_extension = page.path | split: '.' | last %}
+                        {% comment %} Extract folder name if in subfolder {% endcomment %}
+                        {% assign path_after_public = page.path | split: 'public/' | last %}
+                        {% assign path_parts = path_after_public | split: '/' %}
+                        {% assign folder_name = "" %}
+                        {% if path_parts.size > 1 %}
+                            {% assign folder_name = path_parts[0] %}
+                        {% endif %}
+                        
+                        {% assign file_info = page.path | append: "|" | append: page.url | append: "|" %}
+                        {% if page.title %}
+                            {% assign file_info = file_info | append: page.title %}
+                        {% else %}
+                            {% assign file_name = page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' %}
+                            {% assign file_info = file_info | append: file_name %}
+                        {% endif %}
+                        {% assign file_info = file_info | append: "|" | append: page_extension | append: "|" %}
+                        {% if page.date %}
+                            {% assign file_info = file_info | append: page.date %}
+                        {% else %}
+                            {% assign file_info = file_info | append: "2024-01-01" %}
+                        {% endif %}
+                        {% assign file_info = file_info | append: "|" | append: folder_name %}
+                        {% comment %} Add file type marker: document or other {% endcomment %}
+                        {% if page_extension == 'html' or page_extension == 'md' %}
+                            {% assign file_info = file_info | append: "|document" %}
+                        {% else %}
+                            {% assign file_info = file_info | append: "|other" %}
+                        {% endif %}
+                        
+                        {% assign public_files = public_files | push: file_info %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% comment %} Collect ALL files from site.static_files (including images, PDFs, etc.) {% endcomment %}
+                {% for file in site.static_files %}
+                    {% if file.path contains '/public/' %}
+                        {% assign file_extension = file.extname | remove: '.' %}
+                        {% comment %} Check if not already added from site.pages {% endcomment %}
+                        {% assign already_added = false %}
+                        {% for existing in public_files %}
+                            {% if existing contains file.path %}
+                                {% assign already_added = true %}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% unless already_added %}
+                            {% comment %} Extract folder name if in subfolder {% endcomment %}
+                            {% assign path_after_public = file.path | split: '/public/' | last %}
+                            {% assign path_parts = path_after_public | split: '/' %}
+                            {% assign folder_name = "" %}
+                            {% if path_parts.size > 1 %}
+                                {% assign folder_name = path_parts[0] %}
+                            {% endif %}
+                            
+                            {% assign file_info = file.path | append: "|" | append: file.path | append: "|" %}
+                            {% assign file_name = file.basename | replace: '_', ' ' | replace: '-', ' ' %}
+                            {% assign file_info = file_info | append: file_name | append: "|" | append: file_extension | append: "|" %}
+                            {% assign file_info = file_info | append: file.modified_time | default: "2024-01-01" %}
+                            {% assign file_info = file_info | append: "|" | append: folder_name %}
+                            {% comment %} Add file type marker: document or other {% endcomment %}
+                            {% if file_extension == 'html' or file_extension == 'md' %}
+                                {% assign file_info = file_info | append: "|document" %}
+                            {% else %}
+                                {% assign file_info = file_info | append: "|other" %}
+                            {% endif %}
+                            {% assign public_files = public_files | push: file_info %}
+                        {% endunless %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if public_files.size > 0 %}
+                    <table id="publicTable" class="files-table display">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th class="date-col">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file_data in public_files %}
+                                {% assign file_parts = file_data | split: "|" %}
+                                {% assign file_path = file_parts[0] %}
+                                {% assign file_url = file_parts[1] %}
+                                {% assign file_title = file_parts[2] %}
+                                {% assign file_ext = file_parts[3] %}
+                                {% assign file_date = file_parts[4] %}
+                                {% assign folder_name = file_parts[5] %}
+                                {% assign file_type = file_parts[6] %}
+                                
+                                <tr class="file-row {% if file_type == 'document' %}document-file{% else %}other-file{% endif %}" data-extension="{{ file_ext }}" style="{% if file_type != 'document' %}display: none;{% endif %}">
+                                    <td class="file-name">
+                                        <div class="file-info{% if folder_name != '' %} subfolder-file{% endif %}">
+                                            {% if file_ext == 'md' %}
+                                                <i class="bi bi-markdown file-icon md-icon" title="Markdown"></i>
+                                            {% elsif file_ext == 'html' %}
+                                                <i class="bi bi-filetype-html file-icon html-icon" title="HTML"></i>
+                                            {% elsif file_ext == 'pdf' %}
+                                                <i class="bi bi-filetype-pdf file-icon pdf-icon" title="PDF"></i>
+                                            {% elsif file_ext == 'jpg' or file_ext == 'jpeg' or file_ext == 'png' or file_ext == 'gif' %}
+                                                <i class="bi bi-file-image file-icon image-icon" title="Image"></i>
+                                            {% elsif file_ext == 'doc' or file_ext == 'docx' %}
+                                                <i class="bi bi-file-word file-icon doc-icon" title="Word Document"></i>
                                             {% else %}
-                                                {{ page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
+                                                <i class="bi bi-file-earmark file-icon default-icon" title="File"></i>
                                             {% endif %}
-                                        </a>
+                                            <a href="{{ site.baseurl }}{{ file_url }}" target="_blank">
+                                                {{ file_title }}
+                                            </a>
+                                            {% if folder_name != '' %}
+                                                <span class="badge folder-badge">{{ folder_name }}</span>
+                                            {% endif %}
+                                            <button class="copy-link-btn" onclick="copyLink('{{ file_url }}', this)" title="Copy link">
+                                                <i class="bi bi-link-45deg"></i>
+                                            </button>
+                                        </div>
                                     </td>
-                                    <td data-order="{{ page.date | date: '%s' }}">
-                                        {% if page.date %}
-                                            {{ page.date | date: "%B %d, %Y" }}
+                                    <td class="file-date" data-order="{{ file_date }}">
+                                        {% if file_date != '2024-01-01' %}
+                                            {{ file_date | date: "%y/%m/%d" }}
                                         {% else %}
                                             -
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        {% if page_extension == 'md' %}
-                                            <span class="badge bg-info">Markdown</span>
-                                        {% else %}
-                                            <span class="badge bg-primary">HTML</span>
-                                        {% endif %}
-                                    </td>
                                 </tr>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="alert alert-info" role="alert">
+                        No public documents found. Add HTML or Markdown files to the <code>public/</code> folder to see them listed here.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Private Documents Tab -->
+        <div class="tab-pane fade" id="private" role="tabpanel">
+            <div id="privateLockedMessage" class="private-locked">
+                <h3><i class="bi bi-shield-lock"></i> Locked</h3>
+                <p>Enter password above to access</p>
+            </div>
+            
+            <div id="privateDocuments" style="display: none;">
+                <div id="privateDocumentsList">
+                    {% comment %} Collect all private files from both site.pages and site.static_files {% endcomment %}
+                    {% assign private_files = "" | split: "" %}
                     
-                    {% comment %} Also include static HTML files that don't have front matter {% endcomment %}
-                    {% assign static_public = site.static_files | where_exp: "file", "file.path contains '/public/'" | where_exp: "file", "file.extname == '.html'" %}
-                    {% for static_page in static_public %}
-                        {% assign already_listed = false %}
-                        {% for page in site.pages %}
-                            {% if page.path == static_page.path %}
-                                {% assign already_listed = true %}
-                                {% break %}
-                            {% endif %}
-                        {% endfor %}
-                        {% unless already_listed %}
-                            <tr>
-                                <td>
-                                    <a href="{{ site.baseurl }}{{ static_page.path }}">
-                                        {{ static_page.name | remove: '.html' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
-                                    </a>
-                                </td>
-                                <td data-order="{{ static_page.modified_time | date: '%s' }}">
-                                    {{ static_page.modified_time | date: "%B %d, %Y" }}
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">HTML</span>
-                                </td>
-                            </tr>
-                        {% endunless %}
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-            {% assign public_pages = site.pages | where_exp: "page", "page.path contains 'public/'" | size %}
-            {% if public_pages == 0 %}
-                <div class="alert alert-info" role="alert">
-                    No public documents found. Add HTML or Markdown files to the <code>public/</code> folder to see them listed here.
-                </div>
-            {% endif %}
-        </div>
-    </div>
-    
-    <!-- Private Documents Section -->
-    <div class="private-section">
-        <h2 class="section-header">
-            <span class="section-icon">🔒</span>Private Zone
-        </h2>
-        
-        <div id="passwordForm">
-            <div class="text-center">
-                <p class="text-muted mb-3">Enter password to access private documents</p>
-                <div class="password-input-group">
-                    <div class="input-group">
-                        <input type="password" 
-                               id="privatePassword" 
-                               class="form-control" 
-                               placeholder="Enter password"
-                               onkeypress="if(event.key === 'Enter') unlockPrivate()">
-                        <button class="btn btn-primary" onclick="unlockPrivate()">
-                            <i class="bi bi-unlock"></i> Unlock
-                        </button>
-                    </div>
-                    <div class="text-danger mt-2" id="passwordError" style="display: none;">
-                        Incorrect password. Please try again.
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="privateDocuments">
-            <div class="alert alert-success mb-3">
-                <strong>🔓 Access Granted</strong> - Private documents are now accessible
-                <button class="btn btn-sm btn-outline-secondary float-end" onclick="lockPrivate()">Lock Again</button>
-            </div>
-            
-            <table id="privateTable" class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
+                    {% comment %} First collect from site.pages (processed files like MD) {% endcomment %}
                     {% for page in site.pages %}
                         {% if page.path contains 'private/' %}
                             {% assign page_extension = page.path | split: '.' | last %}
                             {% if page_extension == 'html' or page_extension == 'md' %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ site.baseurl }}{{ page.url }}">
-                                            {% if page.title %}
-                                                {{ page.title }}
-                                            {% else %}
-                                                {{ page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
-                                            {% endif %}
-                                            <span class="lock-badge badge bg-warning">Protected</span>
-                                        </a>
-                                    </td>
-                                    <td data-order="{{ page.date | date: '%s' }}">
-                                        {% if page.date %}
-                                            {{ page.date | date: "%B %d, %Y" }}
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if page_extension == 'md' %}
-                                            <span class="badge bg-info">Markdown</span>
-                                        {% else %}
-                                            <span class="badge bg-primary">HTML</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
+                                {% comment %} Extract folder name if in subfolder {% endcomment %}
+                                {% assign path_after_private = page.path | split: 'private/' | last %}
+                                {% assign path_parts = path_after_private | split: '/' %}
+                                {% assign folder_name = "" %}
+                                {% if path_parts.size > 1 %}
+                                    {% assign folder_name = path_parts[0] %}
+                                {% endif %}
+                                
+                                {% assign file_info = page.path | append: "|" | append: page.url | append: "|" %}
+                                {% if page.title %}
+                                    {% assign file_info = file_info | append: page.title %}
+                                {% else %}
+                                    {% assign file_name = page.name | remove: '.html' | remove: '.md' | replace: '_', ' ' | replace: '-', ' ' %}
+                                    {% assign file_info = file_info | append: file_name %}
+                                {% endif %}
+                                {% assign file_info = file_info | append: "|" | append: page_extension | append: "|" %}
+                                {% if page.date %}
+                                    {% assign file_info = file_info | append: page.date %}
+                                {% else %}
+                                    {% assign file_info = file_info | append: "2024-01-01" %}
+                                {% endif %}
+                                {% assign file_info = file_info | append: "|" | append: folder_name %}
+                                
+                                {% assign private_files = private_files | push: file_info %}
                             {% endif %}
                         {% endif %}
                     {% endfor %}
                     
-                    {% comment %} Also include static HTML files in private folder {% endcomment %}
-                    {% assign static_private = site.static_files | where_exp: "file", "file.path contains '/private/'" | where_exp: "file", "file.extname == '.html'" %}
-                    {% for static_page in static_private %}
-                        {% assign already_listed = false %}
-                        {% for page in site.pages %}
-                            {% if page.path == static_page.path %}
-                                {% assign already_listed = true %}
-                                {% break %}
+                    {% comment %} Also collect HTML files from site.static_files {% endcomment %}
+                    {% for file in site.static_files %}
+                        {% if file.path contains '/private/' %}
+                            {% assign file_extension = file.extname | remove: '.' %}
+                            {% if file_extension == 'html' %}
+                                {% comment %} Check if not already added from site.pages {% endcomment %}
+                                {% assign already_added = false %}
+                                {% for existing in private_files %}
+                                    {% if existing contains file.path %}
+                                        {% assign already_added = true %}
+                                        {% break %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% unless already_added %}
+                                    {% comment %} Extract folder name if in subfolder {% endcomment %}
+                                    {% assign path_after_private = file.path | split: '/private/' | last %}
+                                    {% assign path_parts = path_after_private | split: '/' %}
+                                    {% assign folder_name = "" %}
+                                    {% if path_parts.size > 1 %}
+                                        {% assign folder_name = path_parts[0] %}
+                                    {% endif %}
+                                    
+                                    {% assign file_info = file.path | append: "|" | append: file.path | append: "|" %}
+                                    {% assign file_name = file.basename | replace: '_', ' ' | replace: '-', ' ' %}
+                                    {% assign file_info = file_info | append: file_name | append: "|html|" %}
+                                    {% assign file_info = file_info | append: file.modified_time | default: "2024-01-01" %}
+                                    {% assign file_info = file_info | append: "|" | append: folder_name %}
+                                    {% assign private_files = private_files | push: file_info %}
+                                {% endunless %}
                             {% endif %}
-                        {% endfor %}
-                        {% unless already_listed %}
-                            <tr>
-                                <td>
-                                    <a href="{{ site.baseurl }}{{ static_page.path }}">
-                                        {{ static_page.name | remove: '.html' | replace: '_', ' ' | replace: '-', ' ' | capitalize }}
-                                        <span class="lock-badge badge bg-warning">Protected</span>
-                                    </a>
-                                </td>
-                                <td data-order="{{ static_page.modified_time | date: '%s' }}">
-                                    {{ static_page.modified_time | date: "%B %d, %Y" }}
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">HTML</span>
-                                </td>
-                            </tr>
-                        {% endunless %}
+                        {% endif %}
                     {% endfor %}
-                </tbody>
-            </table>
-            
-            {% assign private_pages = site.pages | where_exp: "page", "page.path contains 'private/'" | size %}
-            {% if private_pages == 0 %}
-                <div class="alert alert-info" role="alert">
-                    No private documents found. Add HTML or Markdown files to the <code>private/</code> folder to see them listed here.
+                    
+                    {% if private_files.size > 0 %}
+                        <table id="privateTable" class="files-table display">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th class="date-col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file_data in private_files %}
+                                    {% assign file_parts = file_data | split: "|" %}
+                                    {% assign file_path = file_parts[0] %}
+                                    {% assign file_url = file_parts[1] %}
+                                    {% assign file_title = file_parts[2] %}
+                                    {% assign file_ext = file_parts[3] %}
+                                    {% assign file_date = file_parts[4] %}
+                                    {% assign folder_name = file_parts[5] %}
+                                    
+                                    <tr class="file-row document-file" data-extension="{{ file_ext }}">
+                                        <td class="file-name">
+                                            <div class="file-info{% if folder_name != '' %} subfolder-file{% endif %}">
+                                                {% if file_ext == 'md' %}
+                                                    <i class="bi bi-markdown file-icon md-icon" title="Markdown"></i>
+                                                {% elsif file_ext == 'html' %}
+                                                    <i class="bi bi-filetype-html file-icon html-icon" title="HTML"></i>
+                                                {% elsif file_ext == 'pdf' %}
+                                                    <i class="bi bi-filetype-pdf file-icon pdf-icon" title="PDF"></i>
+                                                {% elsif file_ext == 'jpg' or file_ext == 'jpeg' or file_ext == 'png' or file_ext == 'gif' %}
+                                                    <i class="bi bi-file-image file-icon image-icon" title="Image"></i>
+                                                {% elsif file_ext == 'doc' or file_ext == 'docx' %}
+                                                    <i class="bi bi-file-word file-icon doc-icon" title="Word Document"></i>
+                                                {% else %}
+                                                    <i class="bi bi-file-earmark file-icon default-icon" title="File"></i>
+                                                {% endif %}
+                                                <a href="{{ site.baseurl }}{{ file_url }}" target="_blank">
+                                                    {{ file_title }}
+                                                </a>
+                                                {% if folder_name != '' %}
+                                                    <span class="badge folder-badge">{{ folder_name }}</span>
+                                                {% endif %}
+                                                <button class="copy-link-btn" onclick="copyLink('{{ file_url }}', this)" title="Copy link">
+                                                    <i class="bi bi-link-45deg"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td class="file-date" data-order="{{ file_date }}">
+                                            {% if file_date != '2024-01-01' %}
+                                                {{ file_date | date: "%y/%m/%d" }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="alert alert-info" role="alert">
+                            No private documents found. Add HTML or Markdown files to the <code>private/</code> folder to see them listed here.
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
         </div>
-    </div>
-    
-    <!-- Statistics -->
-    <div class="mt-4 text-center text-muted">
-        <small>
-            {% assign public_count = site.pages | where_exp: "page", "page.path contains 'public/'" | size %}
-            {% assign private_count = site.pages | where_exp: "page", "page.path contains 'private/'" | size %}
-            Public Documents: {{ public_count }} | Private Documents: {{ private_count }}
-        </small>
     </div>
 </div>
 
 <script>
-// Password for private section (using simple check for "dev123123")
-const correctPassword = 'dev123123';
+// Password for private section
+const correctPassword = 'maco';
+let privateUnlocked = false;
 
-// Check URL parameters on page load
+// Initialize on page load
 window.addEventListener('DOMContentLoaded', function() {
-    // Check for URL parameter
+    // Check URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const keyParam = urlParams.get('key') || urlParams.get('unlock');
     
@@ -298,56 +918,331 @@ window.addEventListener('DOMContentLoaded', function() {
         showPrivateDocuments();
     }
     
+    // Initialize Bootstrap tabs (fallback if Bootstrap JS not loaded)
+    initializeTabs();
+    
     // Initialize DataTables for public table
-    if ($.fn.DataTable && $('#publicTable tbody tr').length > 0) {
-        $('#publicTable').DataTable({
-            "pageLength": 10,
-            "order": [[1, "desc"]],
+    if (document.getElementById('publicTable') && !$.fn.DataTable.isDataTable('#publicTable')) {
+        var publicTable = $('#publicTable').DataTable({
+            "pageLength": 25,
+            "order": [[0, "asc"]],
+            "dom": 'rt<"dataTables_bottom"lip>',
             "language": {
-                "search": "Search public documents:",
-                "lengthMenu": "Show _MENU_ documents per page",
-                "info": "Showing _START_ to _END_ of _TOTAL_ public documents"
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search",
+                "lengthMenu": "_MENU_ /page",
+                "info": "_START_ - _END_ record",
+                "infoEmpty": "0 - 0 record",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            }
+        });
+        
+        // Move search box to top controls
+        setTimeout(function() {
+            $('#searchContainer').append($('.dataTables_filter'));
+            $('.dataTables_filter').show();
+        }, 100);
+    }
+    
+    // Don't initialize private table here - wait until it's unlocked
+    
+    // Close password dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.password-input-wrapper')) {
+            closePasswordDropdown();
+        }
+    });
+});
+
+// Tab switching functionality
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.nav-link');
+    const panes = document.querySelectorAll('.tab-pane');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active from all tabs and panes
+            tabs.forEach(t => t.classList.remove('active'));
+            panes.forEach(p => {
+                p.classList.remove('show', 'active');
+            });
+            
+            // Add active to clicked tab
+            this.classList.add('active');
+            
+            // Show corresponding pane
+            const target = this.getAttribute('href');
+            const pane = document.querySelector(target);
+            if (pane) {
+                pane.classList.add('show', 'active');
+            }
+            
+            // Update search box to work with the active table
+            updateSearchBox(target);
+        });
+    });
+}
+
+// Update search box to work with the currently active table
+function updateSearchBox(tabTarget) {
+    const searchInput = document.querySelector('.dataTables_filter input');
+    if (searchInput) {
+        // Clear the search input when switching tabs
+        searchInput.value = '';
+        
+        // Trigger search clear on both tables
+        if ($.fn.DataTable.isDataTable('#publicTable')) {
+            $('#publicTable').DataTable().search('').draw();
+        }
+        if ($.fn.DataTable.isDataTable('#privateTable')) {
+            $('#privateTable').DataTable().search('').draw();
+        }
+        
+        // Set up new event listener for the active table
+        const newInput = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(newInput, searchInput);
+        
+        newInput.addEventListener('keyup', function() {
+            if (tabTarget === '#public' && $.fn.DataTable.isDataTable('#publicTable')) {
+                $('#publicTable').DataTable().search(this.value).draw();
+            } else if (tabTarget === '#private' && $.fn.DataTable.isDataTable('#privateTable')) {
+                $('#privateTable').DataTable().search(this.value).draw();
             }
         });
     }
-});
+}
 
 function unlockPrivate() {
     const password = document.getElementById('privatePassword').value;
-    const errorMsg = document.getElementById('passwordError');
     
     if (password === correctPassword) {
         showPrivateDocuments();
         sessionStorage.setItem('privateAccess', 'granted');
-        errorMsg.style.display = 'none';
+        
+        // Clear password field
+        document.getElementById('privatePassword').value = '';
     } else {
-        errorMsg.style.display = 'block';
+        // Show error briefly
+        alert('Incorrect password. Please try again.');
         document.getElementById('privatePassword').value = '';
     }
 }
 
+function unlockPrivateMobile() {
+    const password = document.getElementById('privatePasswordMobile').value;
+    
+    if (password === correctPassword) {
+        showPrivateDocuments();
+        sessionStorage.setItem('privateAccess', 'granted');
+        
+        // Clear password field and close dropdown
+        document.getElementById('privatePasswordMobile').value = '';
+        closePasswordDropdown();
+    } else {
+        // Show error briefly
+        alert('Incorrect password. Please try again.');
+        document.getElementById('privatePasswordMobile').value = '';
+    }
+}
+
+function togglePasswordDropdown(button) {
+    const wrapper = button.closest('.password-input-wrapper');
+    if (wrapper) {
+        wrapper.classList.toggle('mobile-active');
+        // Focus input when opening
+        if (wrapper.classList.contains('mobile-active')) {
+            const input = wrapper.querySelector('#privatePasswordMobile');
+            if (input) {
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+    }
+}
+
+function closePasswordDropdown() {
+    const wrapper = document.querySelector('.password-input-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('mobile-active');
+    }
+}
+
 function showPrivateDocuments() {
-    document.getElementById('passwordForm').style.display = 'none';
+    privateUnlocked = true;
+    
+    // Update header - hide all password inputs and show logout button
+    document.getElementById('headerPasswordForm').style.display = 'none';
+    document.querySelector('.password-input-wrapper').style.display = 'none';
+    document.getElementById('privateAccessGranted').style.display = 'block';
+    
+    // Show private documents
+    document.getElementById('privateLockedMessage').style.display = 'none';
     document.getElementById('privateDocuments').style.display = 'block';
     
-    // Initialize DataTables for private table if not already initialized
-    if ($.fn.DataTable && !$.fn.DataTable.isDataTable('#privateTable') && $('#privateTable tbody tr').length > 0) {
-        $('#privateTable').DataTable({
-            "pageLength": 10,
-            "order": [[1, "desc"]],
+    // Initialize DataTable for private table if not already initialized
+    if (document.getElementById('privateTable') && !$.fn.DataTable.isDataTable('#privateTable')) {
+        var privateTable = $('#privateTable').DataTable({
+            "pageLength": 25,
+            "order": [[0, "asc"]],
+            "dom": 'rt<"dataTables_bottom"lip>',
             "language": {
-                "search": "Search private documents:",
-                "lengthMenu": "Show _MENU_ documents per page",
-                "info": "Showing _START_ to _END_ of _TOTAL_ private documents"
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search",
+                "lengthMenu": "_MENU_ /page",
+                "info": "_START_ - _END_ record",
+                "infoEmpty": "0 - 0 record",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
             }
         });
+        
+        // Move search box to top controls (if not already moved by public table)
+        setTimeout(function() {
+            if ($('#searchContainer .dataTables_filter').length === 0) {
+                $('#searchContainer').append($('.dataTables_filter'));
+            }
+            $('.dataTables_filter').show();
+        }, 100);
     }
 }
 
 function lockPrivate() {
-    document.getElementById('passwordForm').style.display = 'block';
+    privateUnlocked = false;
+    
+    // Update header - show appropriate login button based on screen size
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        document.getElementById('headerPasswordForm').style.display = 'none';
+        document.querySelector('.password-input-wrapper').style.display = 'block';
+    } else {
+        document.getElementById('headerPasswordForm').style.display = 'flex';
+        document.querySelector('.password-input-wrapper').style.display = 'none';
+    }
+    document.getElementById('privateAccessGranted').style.display = 'none';
+    
+    // Hide private documents
+    document.getElementById('privateLockedMessage').style.display = 'block';
     document.getElementById('privateDocuments').style.display = 'none';
-    document.getElementById('privatePassword').value = '';
+    
+    // Clear session
     sessionStorage.removeItem('privateAccess');
 }
+
+// Toggle folder expand/collapse
+function toggleFolder(element) {
+    element.classList.toggle('collapsed');
+    const contents = element.nextElementSibling;
+    if (contents) {
+        contents.style.display = contents.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Copy link to clipboard
+function copyLink(path, button) {
+    // Build the full URL
+    const baseUrl = window.location.origin;
+    const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+    const fullUrl = baseUrl + basePath + path;
+    
+    // Use modern clipboard API if available
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+            // Update button to show success
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check"></i>';
+            button.classList.add('copied');
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            // Fallback to old method
+            copyLinkFallback(fullUrl, button);
+        });
+    } else {
+        // Use fallback for older browsers
+        copyLinkFallback(fullUrl, button);
+    }
+}
+
+function copyLinkFallback(url, button) {
+    // Create a temporary input element
+    const tempInput = document.createElement('input');
+    tempInput.value = url;
+    tempInput.style.position = 'absolute';
+    tempInput.style.left = '-9999px';
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    
+    try {
+        document.execCommand('copy');
+        
+        // Update button to show success
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-check"></i>';
+        button.classList.add('copied');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('copied');
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link');
+    }
+    
+    document.body.removeChild(tempInput);
+}
+
+// Toggle file types display
+function toggleFileTypes() {
+    const checkbox = document.getElementById('showAllFiles');
+    const showAll = checkbox.checked;
+    
+    // Store preference
+    localStorage.setItem('showAllFileTypes', showAll ? 'true' : 'false');
+    
+    // Show or hide non-document files (images, PDFs, etc.)
+    const otherFiles = document.querySelectorAll('.other-file');
+    otherFiles.forEach(file => {
+        if (showAll) {
+            file.style.display = '';
+        } else {
+            file.style.display = 'none';
+        }
+    });
+    
+    // Refresh DataTable to update pagination
+    if ($.fn.DataTable.isDataTable('#publicTable')) {
+        $('#publicTable').DataTable().draw();
+    }
+    if ($.fn.DataTable.isDataTable('#privateTable')) {
+        $('#privateTable').DataTable().draw();
+    }
+}
+
+// Check file type preference on load
+window.addEventListener('DOMContentLoaded', function() {
+    const showAll = localStorage.getItem('showAllFileTypes') === 'true';
+    
+    if (showAll && document.getElementById('showAllFiles')) {
+        document.getElementById('showAllFiles').checked = true;
+        // Apply the preference
+        setTimeout(() => toggleFileTypes(), 200);
+    }
+});
 </script>
