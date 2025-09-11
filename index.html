@@ -21,7 +21,7 @@ title: Reports Index
                 {% assign title = filename | replace: '_', ' ' | replace: '-', ' ' | capitalize %}
                 <tr>
                     <td>
-                        <a href="{{ report.path | relative_url }}">{{ title }}</a>
+                        <a href="{{ site.baseurl }}{{ report.path }}">{{ title }}</a>
                     </td>
                     <td data-order="{{ report.modified_time | date: '%s' }}">
                         {{ report.modified_time | date: "%B %d, %Y" }}
