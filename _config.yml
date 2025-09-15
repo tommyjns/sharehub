@@ -21,16 +21,9 @@ exclude:
   - vendor/gems/
   - vendor/ruby/
 
-# Layout defaults for different folders
+# Default layout for all documents
 defaults:
-  # Public documents use the default layout
   - scope:
-      path: "public"
+      path: ""
     values:
-      layout: "default"
-  
-  # Private documents automatically use the password-protected layout
-  - scope:
-      path: "private"
-    values:
-      layout: "private_protected"
+      layout: "universal"

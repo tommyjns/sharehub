@@ -1,7 +1,8 @@
 ---
-layout: private_protected
+layout: universal
 title: Confidential Sales Strategy Q4 2024
 date: 2024-10-15
+access: private
 ---
 
 # Confidential Sales Strategy Q4 2024

@@ -1,116 +1,126 @@
-# Share Hub - MCP Server Upload Guide
+# Share Hub - Tag-Based Document Sharing Portal
 
 ## Overview
-This guide provides instructions for uploading documents to the Share Hub using an MCP server with Git capabilities. The Share Hub is a Jekyll-based document sharing portal with public and private sections.
+Share Hub is a Jekyll-based document sharing portal with tag-based access control. Documents can be public or private based on tags in their front matter, not their folder location. All documents are stored in a single `documents/` folder for better organization.
+
+## 🆕 Tag-Based Protection System
+Unlike traditional folder-based protection, Share Hub uses front matter tags to control access:
+- **Public files**: No `access` tag needed (default)
+- **Private files**: Add `access: private` in front matter
+- **Password**: "maco" for all private documents
 
 ## Repository Structure
 ```
 sharehub/
-├── public/          # Public documents (no password required)
-│   ├── *.md        # Markdown files (auto-converted to HTML by Jekyll)
-│   └── *.html      # Direct HTML files
-├── private/         # Private documents (password protected - default: "maco")
-│   ├── *.md        # Markdown files (auto-converted to HTML by Jekyll)
-│   └── *.html      # Direct HTML files
-└── _layouts/        # Jekyll layouts (DO NOT MODIFY)
+├── documents/          # All documents (both public and private)
+│   ├── *.md           # Markdown files
+│   ├── *.html         # HTML files
+│   └── [subfolders]/  # Optional organization by topic
+├── _layouts/          # Jekyll layouts (DO NOT MODIFY)
+│   └── universal.html # Universal layout with protection logic
+└── index.html         # Main listing page
 ```
 
 ## File Upload Guidelines
 
 ### 1. Public Documents
-Upload files to the `public/` directory for documents that should be accessible without authentication.
+Documents are public by default. Simply upload to `documents/` folder.
 
 **For Markdown files (.md):**
-```
-Location: public/[filename].md
-```
-- Must include YAML front matter at the top:
 ```yaml
 ---
 title: "Document Title"
-date: 2025-01-09
+date: 2025-01-15
 ---
+
+Your content here...
 ```
 
 **For HTML files (.html):**
-```
-Location: public/[filename].html
-```
-- Can be standalone HTML or use Jekyll templating
-- If using Jekyll templating, include front matter:
 ```yaml
 ---
 title: "Document Title"
-layout: default
 ---
+<!DOCTYPE html>
+<html>
+...
+</html>
 ```
 
 ### 2. Private Documents
-Upload files to the `private/` directory for password-protected documents.
+Add `access: private` tag to make any document password-protected.
 
 **For Markdown files (.md):**
-```
-Location: private/[filename].md
-```
-- Must include YAML front matter:
 ```yaml
 ---
-title: "Confidential Document Title"
-date: 2025-01-09
+title: "Confidential Document"
+date: 2025-01-15
+access: private
 ---
+
+Your confidential content here...
 ```
 
 **For HTML files (.html):**
-```
-Location: private/[filename].html
-```
-- Include front matter for Jekyll processing:
 ```yaml
 ---
-title: "Confidential Document Title"
-layout: private_protected
+title: "Confidential Document"
+access: private
 ---
+<!DOCTYPE html>
+<html>
+...
+</html>
 ```
 
-### 3. Organizing Documents in Subfolders
-You can create subfolders within `public/` or `private/` for better organization:
+### 3. Organizing with Subfolders
+Create subfolders within `documents/` for topical organization:
 ```
-public/
+documents/
 ├── reports/
 │   ├── quarterly_report.md
 │   └── annual_summary.html
 ├── presentations/
 │   └── product_launch.md
+└── internal/
+    └── strategy.md (with access: private)
 ```
 
-## File Naming Conventions
-- Use lowercase letters
-- Replace spaces with underscores or hyphens
-- Avoid special characters except `-` and `_`
-- Examples: `marketing_report.md`, `q1-sales-data.html`
+## Key Features
 
-## Git Workflow for MCP Server
+### Index Page Behavior
+- **Before login**: Shows only public documents
+- **After login**: Shows all documents (public + private)
+- **Visual indicators**: 
+  - 🔒 Lock icon for private files
+  - Folder badges for files in subfolders
+- **Default view**: HTML/MD files only (checkbox to show all file types)
+- **Sorting**: Alphabetical by title/folder name
 
-### Step 1: Clone or Pull Latest Changes
+### Document Access
+- Files without `access: private` → Publicly accessible
+- Files with `access: private` → Password required ("maco")
+- Session-based: Password remembered until browser closed
+
+## Git Workflow
+
+### Step 1: Pull Latest Changes
 ```bash
 git pull origin main
 ```
 
 ### Step 2: Add Your Document
-Place your file in the appropriate directory:
-- `public/` for public access
-- `private/` for password-protected access
+Place your file in `documents/` folder with appropriate front matter.
 
 ### Step 3: Commit Changes
 ```bash
-git add [filepath]
-git commit -m "Add [document type]: [brief description]"
+git add documents/[filename]
+git commit -m "Add [type]: [description]"
 ```
 
 Example commit messages:
 - "Add public report: Q1 2025 marketing analysis"
 - "Add private document: Confidential financial data"
-- "Update public/sales_dashboard.html with latest figures"
 
 ### Step 4: Push to Repository
 ```bash
@@ -119,82 +129,120 @@ git push origin main
 
 ## Document Templates
 
-### Markdown Template (public/example.md)
+### Public Document Template
 ```markdown
 ---
-title: "Document Title Here"
-date: 2025-01-09
+title: "Public Report Title"
+date: 2025-01-15
 author: "Author Name"
 ---
 
 # Main Heading
 
 ## Introduction
-Your content here...
-
-## Section 1
-More content...
-
-## Conclusion
-Final thoughts...
+Your public content here...
 ```
 
-### HTML Template (public/example.html)
+### Private Document Template
+```markdown
+---
+title: "Confidential Report"
+date: 2025-01-15
+author: "Author Name"
+access: private
+---
+
+# Confidential Information
+
+## Sensitive Data
+Your private content here...
+```
+
+### HTML with Protection
 ```html
 ---
-title: "Document Title Here"
-layout: default
+title: "Private Dashboard"
+access: private
 ---
-
-<h1>Main Heading</h1>
-
-<section>
-    <h2>Introduction</h2>
-    <p>Your content here...</p>
-</section>
-
-<section>
-    <h2>Main Content</h2>
-    <p>More content...</p>
-</section>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ page.title }}</title>
+</head>
+<body>
+    <h1>Confidential Dashboard</h1>
+    <!-- Your HTML content -->
+</body>
+</html>
 ```
 
 ## URL Structure After Upload
-Once uploaded and pushed, documents will be accessible at:
+Documents are accessible at:
 
-**Public documents:**
-- `https://tommyjns.github.io/sharehub/public/[filename]`
-- Example: `https://tommyjns.github.io/sharehub/public/marketing_report`
+**All documents:**
+- `https://[username].github.io/sharehub/documents/[filename]`
+- Example: `https://tommyjns.github.io/sharehub/documents/marketing_report`
 
-**Private documents:**
-- `https://tommyjns.github.io/sharehub/private/[filename]`
-- Example: `https://tommyjns.github.io/sharehub/private/confidential_data`
-- Password required: "maco"
+**Subfolders:**
+- `https://[username].github.io/sharehub/documents/reports/quarterly`
+
+## Migration from Folder-Based System
+
+If you have existing files in `public/` and `private/` folders:
+
+1. Move all files to `documents/` folder
+2. Add `access: private` to front matter of previously private files
+3. Remove old `public/` and `private/` folders
+4. Commit and push changes
 
 ## Important Notes
-1. **Jekyll Processing**: GitHub Pages automatically processes .md files to HTML
-2. **Index Page**: The main page at https://tommyjns.github.io/sharehub/ automatically lists all uploaded documents
-3. **Password Protection**: All files in `private/` are automatically password-protected
-4. **Build Time**: After pushing, GitHub Pages may take 1-5 minutes to build and deploy changes
-5. **File Size**: Keep individual files under 100MB for optimal performance
+
+1. **Default Access**: Files are public unless `access: private` is specified
+2. **Password**: All private files use password "maco"
+3. **Jekyll Processing**: GitHub Pages automatically converts .md to HTML
+4. **Build Time**: Changes take 1-5 minutes to appear after pushing
+5. **File Size**: Keep files under 100MB for optimal performance
+6. **Front Matter**: Required for all .md and .html files
 
 ## Troubleshooting
 
 ### Document Not Appearing
-- Ensure proper YAML front matter is included
-- Check file is in correct directory (public/ or private/)
-- Wait 5 minutes for GitHub Pages to rebuild
-- Verify git push was successful
-
-### Formatting Issues
-- Validate YAML front matter syntax
-- Check markdown syntax is correct
-- Ensure HTML files are well-formed
+- Verify YAML front matter syntax
+- Check file is in `documents/` folder
+- Wait 5 minutes for GitHub Pages rebuild
+- Clear browser cache
 
 ### Access Issues
-- Private documents require password: "maco"
-- Clear browser cache if having issues
-- Check URL is correct including the /sharehub/ base path
+- Private files need `access: private` in front matter
+- Password is case-sensitive: "maco"
+- Session storage keeps you logged in until browser closes
+
+### Formatting Issues
+- Validate YAML syntax (use spaces, not tabs)
+- Check markdown formatting
+- Ensure HTML is well-formed
+
+## Advanced Features
+
+### Custom Passwords (Future)
+While currently all private files use "maco", the system is designed to support custom passwords per file:
+```yaml
+---
+access: private
+password_hash: "SHA256_HASH_HERE"
+---
+```
+
+### Tags and Categories
+Use tags for better organization:
+```yaml
+---
+title: "Document Title"
+tags: [report, financial, q1-2025]
+category: finance
+access: private
+---
+```
 
 ## Support
-For issues or questions about the Share Hub structure, refer to the main README.md file or contact the repository administrator.
+For issues or questions, check the repository issues page or contact the administrator.
