@@ -429,11 +429,17 @@ window.addEventListener('load', function() {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: calc(100vw - 120px); /* Account for icon and button */
+        max-width: calc(100vw - 150px); /* Account for file icon, link icon, and lock icon */
+        font-size: 0.85rem; /* Smaller font on mobile */
     }
-    .file-info > .lock-icon,
+    .file-info > .lock-icon {
+        flex-shrink: 0;
+        font-size: 0.75rem;
+    }
     .file-info > .copy-link-btn {
         flex-shrink: 0;
+        font-size: 0.85rem;
+        padding: 0.1rem 0.2rem;
     }
     /* Mobile table adjustments */
     .table-controls-top {
@@ -729,6 +735,13 @@ window.addEventListener('load', function() {
     </div>
 </div>
 
+<!-- Footer with copyright -->
+<footer style="margin-top: 3rem; padding: 1.5rem 0; border-top: 1px solid #dee2e6; text-align: center; color: #6c757d; font-size: 0.85rem;">
+    <div class="container">
+        <p style="margin: 0;">© 2025 Share Hub v1.0</p>
+    </div>
+</footer>
+
 <script>
 // Password for private section
 const correctPassword = 'maco';
@@ -889,7 +902,13 @@ function showPrivateDocuments() {
     document.querySelector('.password-input-wrapper').style.display = 'none';
     document.getElementById('privateAccessGranted').style.display = 'flex';
     
-    // Refresh the table with new filter
+    // First, make all private files potentially visible
+    const privateFiles = document.querySelectorAll('.private-file');
+    privateFiles.forEach(file => {
+        file.style.display = ''; // Clear the inline display:none
+    });
+    
+    // Then refresh the table with new filter
     toggleFileTypes();
 }
 
@@ -909,6 +928,12 @@ function lockPrivate() {
     
     // Clear session
     sessionStorage.removeItem('privateAccess');
+    
+    // Hide all private files
+    const privateFiles = document.querySelectorAll('.private-file');
+    privateFiles.forEach(file => {
+        file.style.display = 'none';
+    });
     
     // Refresh the table with new filter
     toggleFileTypes();

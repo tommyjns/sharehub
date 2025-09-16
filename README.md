@@ -1,4 +1,11 @@
+---
+---
+
 # Share Hub - Tag-Based Document Sharing Portal
+
+## Overview
+Share Hub is a Jekyll-based document sharing portal...
+
 
 ## Overview
 Share Hub is a Jekyll-based document sharing portal with tag-based access control. Documents can be public or private based on tags in their front matter, not their folder location. All documents are stored in a single `documents/` folder for better organization.
