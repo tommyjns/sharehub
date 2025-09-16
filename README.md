@@ -130,46 +130,47 @@ git push origin main
 ## Quick Guide for Adding Files
 
 ### 📄 **Public Document (Default)**
-Simply place your file in `documents/` folder with basic front matter:
+Simply place your file in `documents/` folder with minimal front matter:
 
-**Markdown (.md):**
+**Simplest (title from filename):**
 ```yaml
 ---
-title: "Your Document Title"
 ---
 Content here...
 ```
 
-**HTML (.html):**
+**With custom title (optional):**
 ```yaml
 ---
-title: "Your Document Title"  
+title: "Custom Title"
 ---
-<!DOCTYPE html>
-<html>...
+Content here...
 ```
 
 ### 🔒 **Private Document**
-Add `access: private` tag to make it password-protected:
+Just add `access: private` - that's all you need:
 
-**Markdown (.md):**
+**Simplest:**
 ```yaml
 ---
-title: "Confidential Document"
 access: private
 ---
 Private content...
 ```
 
-**HTML (.html):**
+**With custom title (optional):**
 ```yaml
 ---
-title: "Confidential Report"
+title: "Custom Title"
 access: private
 ---
-<!DOCTYPE html>
-<html>...
+Private content...
 ```
+
+### 🎯 **Automatic Fallbacks**
+- **No title?** → Uses filename (e.g., `my-report.md` → "my report")
+- **No date?** → Uses file modification time
+- **No author?** → Not required
 
 ### 📁 **Using Subfolders**
 Organize with folders - they'll show as badges:
@@ -189,12 +190,15 @@ documents/
 ## URL Structure After Upload
 Documents are accessible at:
 
-**All documents:**
-- `https://[username].github.io/sharehub/documents/[filename]`
-- Example: `https://tommyjns.github.io/sharehub/documents/marketing_report`
+**GitHub Pages (default):**
+- `https://[username].github.io/[repository]/documents/[filename]`
 
-**Subfolders:**
-- `https://[username].github.io/sharehub/documents/reports/quarterly`
+**Custom Domain:**
+- `https://[your-domain]/documents/[filename]`
+
+**Relative paths (always work):**
+- From index: `./documents/[filename]`
+- From anywhere: `/documents/[filename]`
 
 ## Migration from Folder-Based System
 
