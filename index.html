@@ -7,11 +7,28 @@ title: Share Hub
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 
-<!-- jQuery and DataTables JS -->
+<!-- jQuery (must load first) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<!-- DataTables JS (load after jQuery) -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<!-- Verify DataTables loaded -->
+<script>
+window.addEventListener('load', function() {
+    // Fallback: Try loading DataTables again if it failed
+    if (typeof $.fn !== 'undefined' && typeof $.fn.DataTable === 'undefined') {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js';
+        script.onload = function() {
+            initializeDataTable();
+        };
+        document.head.appendChild(script);
+    }
+});
+</script>
 
 <style>
 /* Modern compact header */
@@ -33,6 +50,7 @@ title: Share Hub
 .files-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* Force table to respect width */
 }
 .files-table thead {
     background: #f8f9fa;
@@ -41,9 +59,15 @@ title: Share Hub
 .files-table th {
     padding: 0.75rem 1rem;
     text-align: left;
-    font-weight: 600;
-    color: #495057;
-    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6c757d;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 50;
 }
 .files-table th.date-col {
     width: 150px;
@@ -64,6 +88,14 @@ title: Share Hub
     align-items: center;
     gap: 0.5rem;
     font-size: 0.95rem;
+}
+.file-info a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.2s;
+}
+.file-info a:hover {
+    color: #667eea;
 }
 .folder-badge {
     background-color: #17a2b8 !important;
@@ -143,24 +175,26 @@ title: Share Hub
     gap: 0.5rem;
 }
 .header-password-group input {
-    width: 200px;
-    padding: 0.4rem 0.8rem;
+    width: 150px;
+    padding: 0.3rem 0.6rem;
     border: 1px solid rgba(255,255,255,0.3);
     background: rgba(255,255,255,0.2);
     color: white;
-    border-radius: 5px;
+    border-radius: 4px;
+    font-size: 0.9rem;
 }
 .header-password-group input::placeholder {
     color: rgba(255,255,255,0.7);
 }
 .header-password-group button {
-    padding: 0.4rem 1rem;
+    padding: 0.3rem 0.8rem;
     background: rgba(255,255,255,0.25);
     border: 1px solid rgba(255,255,255,0.3);
     color: white;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s;
+    font-size: 1rem;
 }
 .header-password-group button:hover {
     background: rgba(255,255,255,0.35);
@@ -206,31 +240,41 @@ title: Share Hub
     position: absolute;
     top: 100%;
     right: 0;
-    background: white;
-    border: 1px solid #dee2e6;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 5px;
-    padding: 1rem;
+    padding: 0.8rem;
     margin-top: 0.5rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     z-index: 1000;
-    min-width: 250px;
+    min-width: 200px;
 }
 .password-dropdown input {
     width: 100%;
     margin-bottom: 0.5rem;
-    padding: 0.4rem;
-    border: 1px solid #dee2e6;
-    border-radius: 3px;
-    color: #333;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+.password-dropdown input::placeholder {
+    color: rgba(255,255,255,0.7);
 }
 .password-dropdown button {
     width: 100%;
-    padding: 0.4rem;
-    background: #667eea;
+    padding: 0.3rem 0.8rem;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
     color: white;
-    border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background 0.3s;
+    font-size: 0.9rem;
+}
+.password-dropdown button:hover {
+    background: rgba(255,255,255,0.35);
 }
 
 /* File type toggle */
@@ -257,91 +301,10 @@ title: Share Hub
     flex-grow: 1;
     display: flex;
     justify-content: flex-end;
+    min-height: 40px;
 }
 
-/* DataTable customization */
-.dataTables_wrapper {
-    margin-top: 1rem;
-}
-.dataTables_top {
-    margin-bottom: 1rem;
-}
-table.dataTable {
-    width: 100% !important;
-    border-collapse: collapse;
-}
-table.dataTable thead th {
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-    cursor: pointer;
-    position: relative;
-    padding-right: 30px;
-}
-table.dataTable thead th.sorting:after,
-table.dataTable thead th.sorting_asc:after,
-table.dataTable thead th.sorting_desc:after {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Bootstrap Icons';
-    opacity: 0.5;
-}
-table.dataTable thead th.sorting:after {
-    content: "↕";
-}
-table.dataTable thead th.sorting_asc:after {
-    content: "↑";
-    opacity: 1;
-}
-table.dataTable thead th.sorting_desc:after {
-    content: "↓";
-    opacity: 1;
-}
-table.dataTable tbody tr {
-    border-bottom: 1px solid #f0f0f0;
-}
-table.dataTable tbody tr:hover {
-    background: #f8f9fa;
-}
-
-/* Search box styling */
-.dataTables_filter {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin-left: auto;
-}
-.dataTables_filter label {
-    display: none !important;
-}
-.dataTables_filter input[type="search"] {
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 250px !important;
-    padding: 0.375rem 0.75rem !important;
-    font-size: 1rem !important;
-    font-weight: 400 !important;
-    line-height: 1.5 !important;
-    color: #212529 !important;
-    background-color: #fff !important;
-    background-clip: padding-box !important;
-    border: 1px solid #ced4da !important;
-    border-radius: 0.375rem !important;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
-}
-.dataTables_filter input[type="search"]:focus {
-    color: #212529 !important;
-    background-color: #fff !important;
-    border-color: #86b7fe !important;
-    outline: 0 !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-}
-.dataTables_filter input[type="search"]::placeholder {
-    color: #6c757d !important;
-    opacity: 1 !important;
-}
+/* DataTable customization - removed obsolete styles handled by inline JS */
 
 /* DataTable bottom controls */
 .dataTables_bottom {
@@ -358,30 +321,38 @@ table.dataTable tbody tr:hover {
     align-items: center;
     gap: 0.5rem;
     padding: 0 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
 }
 .dataTables_info {
     flex-grow: 1;
     text-align: center;
     padding: 0 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
 }
 .dataTables_paginate {
     padding: 0 0.5rem;
+    font-size: 0.85rem;
 }
 .dataTables_length select {
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     background: white;
+    font-size: 0.85rem;
+    color: #495057;
 }
 .dataTables_paginate .paginate_button {
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem;
     margin: 0 2px;
     border: 1px solid #dee2e6;
     border-radius: 3px;
     background: white;
     cursor: pointer;
     text-decoration: none;
-    color: #333;
+    color: #6c757d;
+    font-size: 0.85rem;
 }
 .dataTables_paginate .paginate_button.current,
 .dataTables_paginate .paginate_button:hover {
@@ -392,16 +363,6 @@ table.dataTable tbody tr:hover {
 .dataTables_paginate .paginate_button.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-/* Document counter */
-.doc-counter {
-    font-size: 0.9rem;
-    color: #6c757d;
-    padding: 0.5rem 1rem;
-    background: #f8f9fa;
-    border-radius: 5px;
-    margin-bottom: 1rem;
 }
 
 /* Mobile Responsive */
@@ -428,20 +389,63 @@ table.dataTable tbody tr:hover {
         border: 1px solid rgba(255,255,255,0.3);
         border-radius: 5px;
     }
-    .file-date {
-        font-size: 0.75rem;
-    }
+    /* Hide date column on mobile */
+    .file-date,
     .files-table th.date-col {
+        display: none !important;
+    }
+    /* Prevent table overflow on mobile */
+    .files-table {
+        table-layout: fixed;
+    }
+    .file-row td.file-name {
+        max-width: 0; /* Force column to respect table width */
+        overflow: hidden;
+    }
+    /* Handle folder badge and long titles on mobile */
+    .file-info {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    /* When folder badge exists, put it on separate line */
+    .file-row td.file-name:has(.folder-badge) .file-info {
+        flex-wrap: wrap;
+    }
+    .folder-badge {
         width: auto;
+        margin-bottom: 0.3rem;
+        flex-basis: 100%; /* Forces line break after */
+    }
+    /* Keep icon, title, and link on same line with proper truncation */
+    .file-info > .file-icon {
+        flex-shrink: 0;
+    }
+    .file-info > a {
+        flex: 1 1 auto;
+        min-width: 0; /* Critical for text truncation */
+        display: block; /* Block display for ellipsis to work */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: calc(100vw - 120px); /* Account for icon and button */
+    }
+    .file-info > .lock-icon,
+    .file-info > .copy-link-btn {
+        flex-shrink: 0;
     }
     /* Mobile table adjustments */
     .table-controls-top {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
     }
     #searchContainer {
-        width: 100%;
+        flex: 1;
+    }
+    #fallbackSearch {
+        width: 100% !important;
     }
     .dataTables_filter {
         width: 100%;
@@ -450,21 +454,23 @@ table.dataTable tbody tr:hover {
         width: 100% !important;
     }
     .dataTables_bottom {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
         padding: 0.5rem;
+        gap: 0.5rem;
     }
     .dataTables_length {
-        width: 100%;
-        margin-bottom: 0.5rem;
+        width: auto;
+        margin-bottom: 0;
     }
     .dataTables_info {
-        text-align: left;
-        margin-bottom: 0.5rem;
+        text-align: center;
+        margin-bottom: 0;
+        flex: 1;
     }
     .dataTables_paginate {
-        width: 100%;
-        text-align: center;
+        width: auto;
+        text-align: right;
     }
     #privateAccessGranted .unlock-status {
         display: none;
@@ -481,19 +487,12 @@ table.dataTable tbody tr:hover {
     }
 }
 
-/* Error message styling */
-.password-error {
-    color: #ff6b6b;
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-    display: none;
-}
 </style>
 
 <!-- Compact Header with password input -->
 <div class="share-hub-header">
     <div class="container">
-        <h1><i class="bi bi-folder-fill"></i> Share Hub</h1>
+        <h1><a href="./" style="text-decoration: none; color: inherit;"><i class="bi bi-folder-fill"></i> Share Hub</a></h1>
         <div id="headerPasswordSection">
             <!-- Desktop password form -->
             <div id="headerPasswordForm" class="header-password-group">
@@ -501,43 +500,46 @@ table.dataTable tbody tr:hover {
                        id="privatePassword" 
                        placeholder="Password"
                        onkeypress="if(event.key === 'Enter') unlockPrivate()">
-                <button onclick="unlockPrivate()"><i class="bi bi-box-arrow-in-right"></i></button>
+                <button onclick="unlockPrivate()"><i class="bi bi-unlock"></i></button>
             </div>
             <!-- Mobile password toggle -->
             <div class="password-input-wrapper">
                 <button class="password-toggle-btn" onclick="togglePasswordDropdown(this)">
-                    <i class="bi bi-box-arrow-in-right"></i>
+                    <i class="bi bi-unlock"></i>
                 </button>
                 <div class="password-dropdown">
                     <input type="password" 
                            id="privatePasswordMobile" 
-                           placeholder="Enter password"
+                           placeholder="Password"
                            onkeypress="if(event.key === 'Enter') unlockPrivateMobile()">
-                    <button onclick="unlockPrivateMobile()">Unlock</button>
+                    <button onclick="unlockPrivateMobile()"><i class="bi bi-unlock"></i> Unlock</button>
                 </div>
             </div>
-            <!-- Unlocked status -->
+            <!-- Logout button -->
             <div id="privateAccessGranted" style="display: none;">
-                <span class="unlock-status"><i class="bi bi-shield-check"></i> Unlocked</span>
-                <button onclick="lockPrivate()" title="Logout"><i class="bi bi-box-arrow-right"></i></button>
+                <button onclick="lockPrivate()" title="Logout"><i class="bi bi-lock"></i></button>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container">
-    <!-- Document counter -->
-    <div class="doc-counter" id="docCounter">
-        Loading documents...
-    </div>
-    
     <!-- File Type Toggle and Search -->
     <div class="table-controls-top">
         <div class="file-type-toggle form-check">
             <input type="checkbox" class="form-check-input" id="showDocsOnly" checked onchange="toggleFileTypes()">
             <label class="form-check-label" for="showDocsOnly">HTML/MD Only</label>
         </div>
-        <div id="searchContainer"></div>
+        <div id="searchContainer">
+            <!-- Fallback search box -->
+            <div style="position: relative; display: inline-block;">
+                <i class="bi bi-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #6c757d; pointer-events: none;"></i>
+                <input type="text" id="fallbackSearch" placeholder="Search" 
+                       style="width: 180px; height: 35px; padding: 8px 8px 8px 35px; 
+                              border: 1px solid #ced4da; font-size: 14px; border-radius: 4px;"
+                       oninput="performSearch(this.value)">
+            </div>
+        </div>
     </div>
     
     <!-- Main Documents List -->
@@ -549,12 +551,19 @@ table.dataTable tbody tr:hover {
         {% for page in site.pages %}
             {% if page.path contains 'documents/' %}
                 {% assign page_extension = page.path | split: '.' | last %}
-                {% comment %} Extract folder name if in subfolder {% endcomment %}
+                {% comment %} Extract full folder path if in subfolder {% endcomment %}
                 {% assign path_after_docs = page.path | split: 'documents/' | last %}
                 {% assign path_parts = path_after_docs | split: '/' %}
                 {% assign folder_name = "" %}
                 {% if path_parts.size > 1 %}
-                    {% assign folder_name = path_parts[0] %}
+                    {% comment %} Remove the last part (filename) and join the rest {% endcomment %}
+                    {% assign folder_parts = "" | split: "" %}
+                    {% for part in path_parts %}
+                        {% if forloop.last == false %}
+                            {% assign folder_parts = folder_parts | push: part %}
+                        {% endif %}
+                    {% endfor %}
+                    {% assign folder_name = folder_parts | join: "/" %}
                 {% endif %}
                 
                 {% assign file_info = page.path | append: "|" | append: page.url | append: "|" %}
@@ -602,12 +611,19 @@ table.dataTable tbody tr:hover {
                 {% endfor %}
                 
                 {% unless already_added %}
-                    {% comment %} Extract folder name if in subfolder {% endcomment %}
+                    {% comment %} Extract full folder path if in subfolder {% endcomment %}
                     {% assign path_after_docs = file.path | split: '/documents/' | last %}
                     {% assign path_parts = path_after_docs | split: '/' %}
                     {% assign folder_name = "" %}
                     {% if path_parts.size > 1 %}
-                        {% assign folder_name = path_parts[0] %}
+                        {% comment %} Remove the last part (filename) and join the rest {% endcomment %}
+                        {% assign folder_parts = "" | split: "" %}
+                        {% for part in path_parts %}
+                            {% if forloop.last == false %}
+                                {% assign folder_parts = folder_parts | push: part %}
+                            {% endif %}
+                        {% endfor %}
+                        {% assign folder_name = folder_parts | join: "/" %}
                     {% endif %}
                     
                     {% assign file_info = file.path | append: "|" | append: file.path | append: "|" %}
@@ -705,6 +721,73 @@ table.dataTable tbody tr:hover {
 const correctPassword = 'maco';
 let privateUnlocked = false;
 
+// Manual search function
+function performSearch(searchTerm) {
+    if (typeof $.fn !== 'undefined' && typeof $.fn.DataTable !== 'undefined' && $.fn.DataTable.isDataTable('#documentsTable')) {
+        var table = $('#documentsTable').DataTable();
+        table.search(searchTerm).draw();
+    } else {
+        // Fallback manual search without DataTables
+        var rows = document.querySelectorAll('#documentsTable tbody tr');
+        var term = searchTerm.toLowerCase();
+        
+        rows.forEach(function(row) {
+            var text = row.textContent.toLowerCase();
+            if (text.includes(term)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+}
+
+// Function to initialize DataTable
+function initializeDataTable() {
+    if (!document.getElementById('documentsTable')) {
+        return;
+    }
+    
+    if (typeof $.fn === 'undefined' || typeof $.fn.DataTable === 'undefined') {
+        return;
+    }
+    
+    if ($.fn.DataTable.isDataTable('#documentsTable')) {
+        return;
+    }
+    
+    try {
+        var table = $('#documentsTable').DataTable({
+            "pageLength": 25,
+            "order": [[0, "asc"]],  
+            "columnDefs": [
+                { "orderable": true, "targets": 0 },
+                { "orderable": true, "targets": 1 }
+            ],
+            "dom": 'rt<"dataTables_bottom"lip>',
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search",
+                "lengthMenu": "_MENU_ /page",
+                "info": "_START_-_END_/_TOTAL_",
+                "infoEmpty": "0/0",
+                "infoFiltered": "",
+                "paginate": {
+                    "first": "<<",
+                    "last": ">>",
+                    "next": ">",
+                    "previous": "<"
+                }
+            }
+        });
+        
+        // Use fallback search box (DataTables search integration removed for simplicity)
+        
+    } catch (error) {
+        // Silent fail, fallback search will handle it
+    }
+}
+
 // Initialize on page load
 window.addEventListener('DOMContentLoaded', function() {
     // Check URL parameters
@@ -720,43 +803,8 @@ window.addEventListener('DOMContentLoaded', function() {
         showPrivateDocuments();
     }
     
-    // Update document counter
-    updateDocumentCounter();
-    
     // Initialize DataTable
-    if (document.getElementById('documentsTable') && !$.fn.DataTable.isDataTable('#documentsTable')) {
-        var table = $('#documentsTable').DataTable({
-            "pageLength": 25,
-            "order": [[0, "asc"]], // Sort by title column alphabetically  
-            "columnDefs": [
-                { "orderable": true, "targets": 0 }, // Title column sortable
-                { "orderable": true, "targets": 1 }  // Date column sortable
-            ],
-            "dom": '<"dataTables_top"f>rt<"dataTables_bottom"lip>',
-            "language": {
-                "search": "_INPUT_",
-                "searchPlaceholder": "Search",
-                "lengthMenu": "_MENU_ /page",
-                "info": "_START_ - _END_ record",
-                "infoEmpty": "0 - 0 record",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                }
-            }
-        });
-        
-        // Move search box to top controls
-        setTimeout(function() {
-            var searchBox = $('.dataTables_filter');
-            $('#searchContainer').append(searchBox);
-            searchBox.show();
-            // Ensure search functionality works
-            searchBox.find('input').attr('placeholder', 'Search documents...');
-        }, 100);
-    }
+    initializeDataTable();
     
     // Close password dropdown when clicking outside
     document.addEventListener('click', function(e) {
@@ -765,23 +813,6 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-function updateDocumentCounter() {
-    const publicFiles = document.querySelectorAll('.public-file.document-file').length;
-    const privateFiles = document.querySelectorAll('.private-file.document-file').length;
-    const totalFiles = publicFiles + (privateUnlocked ? privateFiles : 0);
-    const counterEl = document.getElementById('docCounter');
-    
-    if (privateUnlocked) {
-        counterEl.innerHTML = `<i class="bi bi-files"></i> Showing ${totalFiles} documents (${publicFiles} public, ${privateFiles} private)`;
-    } else {
-        if (privateFiles > 0) {
-            counterEl.innerHTML = `<i class="bi bi-files"></i> Showing ${publicFiles} public documents <span style="color: #6c757d;">(+ ${privateFiles} private locked)</span>`;
-        } else {
-            counterEl.innerHTML = `<i class="bi bi-files"></i> Showing ${publicFiles} documents`;
-        }
-    }
-}
 
 function unlockPrivate() {
     const password = document.getElementById('privatePassword').value;
@@ -845,23 +876,8 @@ function showPrivateDocuments() {
     document.querySelector('.password-input-wrapper').style.display = 'none';
     document.getElementById('privateAccessGranted').style.display = 'flex';
     
-    // Show private files
-    const privateFiles = document.querySelectorAll('.private-file');
-    privateFiles.forEach(file => {
-        // Check if it should be shown based on file type filter
-        const docsOnly = document.getElementById('showDocsOnly').checked;
-        if (!docsOnly || file.classList.contains('document-file')) {
-            file.style.display = '';
-        }
-    });
-    
-    // Update document counter
-    updateDocumentCounter();
-    
-    // Redraw DataTable
-    if ($.fn.DataTable.isDataTable('#documentsTable')) {
-        $('#documentsTable').DataTable().draw();
-    }
+    // Refresh the table with new filter
+    toggleFileTypes();
 }
 
 function lockPrivate() {
@@ -878,22 +894,11 @@ function lockPrivate() {
     }
     document.getElementById('privateAccessGranted').style.display = 'none';
     
-    // Hide private files
-    const privateFiles = document.querySelectorAll('.private-file');
-    privateFiles.forEach(file => {
-        file.style.display = 'none';
-    });
-    
-    // Update document counter
-    updateDocumentCounter();
-    
     // Clear session
     sessionStorage.removeItem('privateAccess');
     
-    // Redraw DataTable
-    if ($.fn.DataTable.isDataTable('#documentsTable')) {
-        $('#documentsTable').DataTable().draw();
-    }
+    // Refresh the table with new filter
+    toggleFileTypes();
 }
 
 // Copy link to clipboard
@@ -970,28 +975,45 @@ function toggleFileTypes() {
     // Store preference
     localStorage.setItem('showDocsOnly', docsOnly ? 'true' : 'false');
     
-    // Show or hide non-document files (images, PDFs, etc.)
-    const allFiles = document.querySelectorAll('.file-row');
-    allFiles.forEach(file => {
-        // Check if it's a private file that should be hidden
-        if (!privateUnlocked && file.classList.contains('private-file')) {
-            file.style.display = 'none';
-        } else if (docsOnly) {
-            // Show only document files (HTML/MD)
-            if (file.classList.contains('document-file')) {
-                file.style.display = '';
-            } else {
-                file.style.display = 'none';
+    // Apply custom filter to DataTable
+    if (typeof $.fn !== 'undefined' && typeof $.fn.DataTable !== 'undefined' && $.fn.DataTable.isDataTable('#documentsTable')) {
+        var table = $('#documentsTable').DataTable();
+        
+        // Use custom search to filter rows
+        $.fn.dataTable.ext.search.pop(); // Remove previous custom filter
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var row = table.row(dataIndex).node();
+            
+            // Check private access
+            if (!privateUnlocked && $(row).hasClass('private-file')) {
+                return false;
             }
-        } else {
-            // Show all files
-            file.style.display = '';
-        }
-    });
-    
-    // Refresh DataTable to update pagination
-    if ($.fn.DataTable.isDataTable('#documentsTable')) {
-        $('#documentsTable').DataTable().draw();
+            
+            // Check document type filter
+            if (docsOnly && !$(row).hasClass('document-file')) {
+                return false;
+            }
+            
+            return true;
+        });
+        
+        table.draw();
+    } else {
+        // Fallback for non-DataTable
+        const allFiles = document.querySelectorAll('.file-row');
+        allFiles.forEach(file => {
+            if (!privateUnlocked && file.classList.contains('private-file')) {
+                file.style.display = 'none';
+            } else if (docsOnly) {
+                if (file.classList.contains('document-file')) {
+                    file.style.display = '';
+                } else {
+                    file.style.display = 'none';
+                }
+            } else {
+                file.style.display = '';
+            }
+        });
     }
 }
 

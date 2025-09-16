@@ -127,54 +127,64 @@ Example commit messages:
 git push origin main
 ```
 
-## Document Templates
+## Quick Guide for Adding Files
 
-### Public Document Template
-```markdown
+### 📄 **Public Document (Default)**
+Simply place your file in `documents/` folder with basic front matter:
+
+**Markdown (.md):**
+```yaml
 ---
-title: "Public Report Title"
-date: 2025-01-15
-author: "Author Name"
+title: "Your Document Title"
 ---
-
-# Main Heading
-
-## Introduction
-Your public content here...
+Content here...
 ```
 
-### Private Document Template
-```markdown
+**HTML (.html):**
+```yaml
 ---
-title: "Confidential Report"
-date: 2025-01-15
-author: "Author Name"
+title: "Your Document Title"  
+---
+<!DOCTYPE html>
+<html>...
+```
+
+### 🔒 **Private Document**
+Add `access: private` tag to make it password-protected:
+
+**Markdown (.md):**
+```yaml
+---
+title: "Confidential Document"
 access: private
 ---
-
-# Confidential Information
-
-## Sensitive Data
-Your private content here...
+Private content...
 ```
 
-### HTML with Protection
-```html
+**HTML (.html):**
+```yaml
 ---
-title: "Private Dashboard"
+title: "Confidential Report"
 access: private
 ---
 <!DOCTYPE html>
-<html>
-<head>
-    <title>{{ page.title }}</title>
-</head>
-<body>
-    <h1>Confidential Dashboard</h1>
-    <!-- Your HTML content -->
-</body>
-</html>
+<html>...
 ```
+
+### 📁 **Using Subfolders**
+Organize with folders - they'll show as badges:
+```
+documents/
+├── Reports/Q1/financial.md     → Shows [Reports/Q1]
+├── Presentations/demo.html     → Shows [Presentations]
+└── strategy.md                 → No badge
+```
+
+### ⚡ **That's It!**
+- **Password**: "maco" for all private files
+- **Default**: Files are public unless tagged private
+- **Git**: `git add`, `commit`, and `push` to publish
+- **Wait**: 1-5 minutes for GitHub Pages to update
 
 ## URL Structure After Upload
 Documents are accessible at:
