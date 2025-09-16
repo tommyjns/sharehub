@@ -456,21 +456,34 @@ window.addEventListener('load', function() {
     .dataTables_bottom {
         flex-direction: row;
         align-items: center;
-        padding: 0.5rem;
-        gap: 0.5rem;
+        padding: 0.25rem;
+        gap: 0.25rem;
+        font-size: 0.75rem;
     }
     .dataTables_length {
         width: auto;
         margin-bottom: 0;
+        font-size: 0.75rem;
+    }
+    .dataTables_length select {
+        padding: 0.1rem 0.2rem !important;
+        font-size: 0.75rem !important;
     }
     .dataTables_info {
         text-align: center;
         margin-bottom: 0;
         flex: 1;
+        font-size: 0.75rem;
     }
     .dataTables_paginate {
         width: auto;
         text-align: right;
+        font-size: 0.75rem;
+    }
+    .dataTables_paginate .paginate_button {
+        padding: 0.1rem 0.3rem !important;
+        margin: 0 1px !important;
+        font-size: 0.75rem !important;
     }
     #privateAccessGranted .unlock-status {
         display: none;
@@ -768,7 +781,7 @@ function initializeDataTable() {
             "language": {
                 "search": "_INPUT_",
                 "searchPlaceholder": "Search",
-                "lengthMenu": "_MENU_ /page",
+                "lengthMenu": "_MENU_",
                 "info": "_START_-_END_/_TOTAL_",
                 "infoEmpty": "0/0",
                 "infoFiltered": "",
