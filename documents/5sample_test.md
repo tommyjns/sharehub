@@ -1,3 +1,6 @@
+---
+layout: universal
+---
 ## Features to Test
 
 - Automatic detection of missing front matter
