@@ -1,5 +1,4 @@
----
----
+
 # Sample Test Document
 
 This is a sample markdown file created **without front matter** to test the auto-frontmatter GitHub Actions workflow.
