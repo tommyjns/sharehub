@@ -57,7 +57,7 @@ jobs:
           if [ -f .frontmatter-modified ]; then
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
             git config --local user.name "github-actions[bot]"
-            git add documents/**/*.md
+            git add -A documents/
             git commit -m "chore: auto-add front matter to markdown files [skip ci]"
             git push
             echo "✅ Front matter added and committed"
