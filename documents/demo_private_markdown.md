@@ -1,3 +1,5 @@
+---
+---
 # Demo Document Without Front Matter
 
 This is a test document created without front matter to verify the auto-frontmatter workflow.
