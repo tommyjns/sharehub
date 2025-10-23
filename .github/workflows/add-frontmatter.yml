@@ -36,6 +36,7 @@ jobs:
               # Strip leading blank lines from original file to ensure proper Jekyll parsing
               {
                 echo "---"
+                echo "layout: universal"
                 echo "---"
                 sed '/./,$!d' "$file"
               } > "$file.tmp"

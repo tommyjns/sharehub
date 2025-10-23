@@ -1,4 +1,5 @@
 ---
+layout: universal
 ---
 # Sample Test Document
 
