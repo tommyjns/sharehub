@@ -36,3 +36,4 @@ vendor/
 # Dependencies
 node_modules/
 Gemfile.lock
+# Trigger rebuild
