@@ -3,8 +3,6 @@ name: Auto-add Front Matter to Markdown Files
 on:
   push:
     branches: ["main"]
-    paths:
-      - 'documents/**/*.md'
 
 # Need write permissions to commit changes
 permissions:
