@@ -33,10 +33,11 @@ jobs:
               echo "  → Adding front matter to: $file"
               
               # Create temporary file with front matter + original content
+              # Strip leading blank lines from original file to ensure proper Jekyll parsing
               {
                 echo "---"
                 echo "---"
-                cat "$file"
+                sed '/./,$!d' "$file"
               } > "$file.tmp"
               
               # Replace original file
