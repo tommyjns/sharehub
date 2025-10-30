@@ -738,23 +738,9 @@ window.addEventListener('load', function() {
 <!-- Footer with copyright -->
 <footer style="margin-top: 3rem; padding: 1.5rem 0; border-top: 1px solid #dee2e6; text-align: center; color: #6c757d; font-size: 0.85rem;">
     <div class="container">
-        <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem;">Last updated: <span id="lastUpdate"></span></p>
+        <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem;">Last updated: {{ site.time | date: "%Y-%m-%d %H:%M" }} HKT</p>
         <p style="margin: 0;">© 2025 Share Hub v1.0</p>
     </div>
-    <script>
-        // Convert UTC to HKT (UTC+8)
-        (function() {
-            var utcStr = "{{ site.time | date: '%Y-%m-%d %H:%M:%S' }}";
-            var utcDate = new Date(utcStr + ' UTC');
-            var hktDate = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
-            var formatted = hktDate.getFullYear() + '-' + 
-                String(hktDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                String(hktDate.getDate()).padStart(2, '0') + ' ' +
-                String(hktDate.getHours()).padStart(2, '0') + ':' + 
-                String(hktDate.getMinutes()).padStart(2, '0') + ' HKT';
-            document.getElementById('lastUpdate').textContent = formatted;
-        })();
-    </script>
 </footer>
 
 <script>
