@@ -11,6 +11,14 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
+# Include HTML files without frontmatter
+include:
+  - "_*"
+  
+# Keep HTML files during processing (treat as static)
+keep_files:
+  - "documents"
+
 # Exclude from processing
 exclude:
   - Gemfile
