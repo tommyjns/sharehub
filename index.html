@@ -738,8 +738,8 @@ window.addEventListener('load', function() {
 <!-- Footer with copyright -->
 <footer style="margin-top: 3rem; padding: 1.5rem 0; border-top: 1px solid #dee2e6; text-align: center; color: #6c757d; font-size: 0.85rem;">
     <div class="container">
+        <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem;">Last updated: {{ site.time | date_to_xmlschema | date: "%Y-%m-%d %H:%M" }} HKT</p>
         <p style="margin: 0;">© 2025 Share Hub v1.0</p>
-        <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem;">Last updated: {{ site.time | date: "%Y-%m-%d %H:%M %Z" }}</p>
     </div>
 </footer>
 
