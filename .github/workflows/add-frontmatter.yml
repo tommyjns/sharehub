@@ -21,7 +21,7 @@ jobs:
         run: |
           #!/bin/bash
           
-          # Find all .md files in documents/ directory (including subdirectories)
+          # Find all .md and .html files in documents/ directory (including subdirectories)
           while IFS= read -r file; do
             echo "Checking: $file"
             
@@ -49,7 +49,7 @@ jobs:
             else
               echo "  ✓ Already has front matter"
             fi
-          done < <(find documents -type f -name "*.md")
+          done < <(find documents -type f \( -name "*.md" -o -name "*.html" \))
 
       - name: Commit and push changes
         run: |
