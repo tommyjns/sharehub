@@ -1,3 +1,6 @@
+---
+layout: universal
+---
 # ShareHub Repository Analysis
 
 **Repository**: https://github.com/tommyjns/sharehub
